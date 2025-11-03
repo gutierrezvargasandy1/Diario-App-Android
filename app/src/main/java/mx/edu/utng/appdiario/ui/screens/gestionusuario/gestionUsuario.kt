@@ -283,7 +283,7 @@ fun UsuarioCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Registrado: ${usuario.fechaRegistro}",
+                    text = "Fecha de Nacimiento: ${usuario.fechaRegistro}",
                     fontSize = 12.sp,
                     color = Color.Gray
                 )

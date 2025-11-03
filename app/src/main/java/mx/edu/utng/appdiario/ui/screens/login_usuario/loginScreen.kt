@@ -1,6 +1,5 @@
 package mx.edu.utng.appdiario.ui.screens.login_usuario
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,165 +10,266 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import mx.edu.utng.appdiario.R
-import mx.edu.utng.appdiario.model.LoginRequest
 
+@Composable
+fun LoginScreen(navController: NavHostController) {
+    val context = LocalContext.current
+    val viewModel: LoginViewModel = viewModel(
+        factory = LoginViewModelFactory(context)
+    )
 
+    // Observar los estados del ViewModel
+    val email by viewModel.email.observeAsState(initial = "")
+    val password by viewModel.password.observeAsState(initial = "")
+    val loginEnable by viewModel.loginEnable.observeAsState(initial = false)
+    val isLoading by viewModel.isLoading.observeAsState(initial = false)
+    val errorMessage by viewModel.errorMessage.observeAsState(initial = null)
+    val emailError by viewModel.emailError.observeAsState(initial = null)
+    val passwordError by viewModel.passwordError.observeAsState(initial = null)
+    val navigateToAdmin by viewModel.navigateToAdmin.observeAsState(initial = false)
+    val navigateToUser by viewModel.navigateToUser.observeAsState(initial = false)
 
-@Composable  //fillMaxSize ocupa toda la pantalla
-fun LoginScreen( // Recibe el ViewModel de seguridad
-                navController: NavHostController//recive la navegacion de mi pantalla
-) {
-    ///hice una variable de tipo LoginViewModel clase que se encuentra en mi viewModel que almacena mi viewmodel y mi liveData
-    /// ahora ya lo puedo indicar donde yo quiera que mi logica viva mas tiempo
+    // Efectos para navegación automática después del login
+    LaunchedEffect(navigateToAdmin) {
+        if (navigateToAdmin) {
+            navController.navigate("adminHome") {
+                popUpTo("login") { inclusive = true }
+            }
+            viewModel.onNavigateToAdminCompleted()
+        }
+    }
+
+    LaunchedEffect(navigateToUser) {
+        if (navigateToUser) {
+            navController.navigate("userHome") {
+                popUpTo("login") { inclusive = true }
+            }
+            viewModel.onNavigateToUserCompleted()
+        }
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color(0xFFF5E6D3))
-    ) {                                            //ojo SapoTruco
+    ) {
         Login(
             Modifier.align(Alignment.Center),
-            navController = navController //navegador
-        // tienes que pasar el aligment por que aunque estes dentro de un box no te lo detecta entonces tiene que estar dentro del parametro
-        ) //contieneViewModel ya que esta etiqueta indica que se mantendra viva mi logica por mucho tiempo
+            navController = navController,
+            email = email,
+            password = password,
+            loginEnable = loginEnable,
+            isLoading = isLoading,
+            errorMessage = errorMessage,
+            emailError = emailError,
+            passwordError = passwordError,
+            onEmailChange = { newEmail ->
+                viewModel.onLoginChanged(newEmail, password)
+            },
+            onPasswordChange = { newPassword ->
+                viewModel.onLoginChanged(email, newPassword)
+            },
+            onLoginClick = {
+                viewModel.loginUsuario()
+            }
+        )
+
+        // Loading overlay
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Color.White)
+            }
+        }
     }
 }
 
 @Composable
-/////se esta trabajando toda la estructura de mi pantalla
-///login contiene el viewModel al hacer que mi email y mi password quiero que los pase para que vivan ya que ste login almacena todos los elementos de mi pantalla
-
-fun Login(modifier: Modifier, navController:NavController) {  //colocar el parametro que pasaste
-
-    ////Vals que contienen MI VIEWMODEL para que sobrevivan a rotaciones o cambios de estado Dark
-    // 🔑 USAMOS ESTADOS LOCALES DE COMPOSE para los campos de texto
-    var emailState by remember { mutableStateOf("") }
-    var passwordState by remember { mutableStateOf("") }
-
-    // Lógica para habilitar el botón (se simplifica)
-    val loginEnable = emailState.isNotEmpty() && passwordState.isNotEmpty()
+fun Login(
+    modifier: Modifier,
+    navController: NavController,
+    email: String,
+    password: String,
+    loginEnable: Boolean,
+    isLoading: Boolean,
+    errorMessage: String?,
+    emailError: String?,
+    passwordError: String?,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onLoginClick: () -> Unit
+) {
+    val scrollState = rememberScrollState()
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(top = 1.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,    ///////Align
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 1.dp)
+            .verticalScroll(scrollState),
+        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-
     ) {
+        Imagen(Modifier.padding(top = 10.dp))
 
-        Imagen(Modifier.padding(top = 10.dp))///1 imagen
-        EmailField(emailState, { emailState = it })   ///textfiedlemail
-        Spacer(modifier = Modifier.padding(10.dp))
-
-
-        //el PasswordField
-        PasswordField(passwordState) { passwordState = it }
-        Spacer(modifier = Modifier.padding(13.dp))
-
-
-        // 🔑 CONEXIÓN DEL BOTÓN: Llama al AuthViewModel
-        LoginButton(loginEnable = true ) {
-            navController.navigate("adminHome")
-
+        // Mostrar errores generales
+        errorMessage?.let { error ->
+            Text(
+                text = error,
+                color = Color.Red,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
         }
 
+        EmailField(
+            email = email,
+            onTextFieldChanged = onEmailChange,
+            errorMessage = emailError
+        )
+        Spacer(modifier = Modifier.padding(10.dp))
+
+        PasswordField(
+            password = password,
+            onTextFieldChanged = onPasswordChange,
+            errorMessage = passwordError
+        )
+        Spacer(modifier = Modifier.padding(13.dp))
+
+        LoginButton(
+            loginEnable = loginEnable && !isLoading,
+            isLoading = isLoading
+        ) {
+            onLoginClick()
+        }
 
         Spacer(modifier = Modifier.padding(8.dp))
-        RegistrarseBotton(loginEnable = true) {navController.navigate("registro") }//boton registrarse nav
-
+        RegistrarseBotton(loginEnable = true) {
+            navController.navigate("registro")
+        }
     }
 }
-
 
 @Composable
 fun Imagen(modifier: Modifier) {
-
     Image(painter = painterResource(R.drawable.fondo), contentDescription = "imagen de fondo")
-
 }
 
-
 @Composable
-fun PasswordField(password: String, onTextFieldChanged: (String) -> Unit) {
-////////////////////////////////////////////////////////////////////////////////////////////caja textfieldpassword
-    TextField(
-        modifier = Modifier
-            .width(320.dp)
-            .height(56.dp)
-            .fillMaxWidth(),
-
-
-        placeholder = {
-            Text(
-                text = "Password",
-                color = Color(0xFF4B3621),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                fontStyle = FontStyle.Italic // opcional, si quieres cursiva también
-            )
-        },
-
-        value = password,
-        onValueChange = { onTextFieldChanged(it) },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        singleLine = true,  //no permite los enter/no permite que el texto es mas largo que el ancjo del campo
-        maxLines = 1,      //escribes en una sola linea infinita (mas flexible) si colocas 2 ahora 2 lineas .
-        colors = TextFieldDefaults.colors(
-            focusedTextColor = Color(0xFF4B3621),
-            unfocusedContainerColor = Color.White
-
+fun PasswordField(
+    password: String,
+    onTextFieldChanged: (String) -> Unit,
+    errorMessage: String?
+) {
+    Column {
+        TextField(
+            modifier = Modifier
+                .width(320.dp)
+                .height(56.dp)
+                .fillMaxWidth()
+                .background(
+                    if (errorMessage != null) Color(0xFFFFE6E6) else Color.White,
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
+                ),
+            placeholder = {
+                Text(
+                    text = "Password",
+                    color = Color(0xFF4B3621),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Italic
+                )
+            },
+            value = password,
+            onValueChange = { onTextFieldChanged(it) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            singleLine = true,
+            maxLines = 1,
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = Color(0xFF4B3621),
+                unfocusedContainerColor = if (errorMessage != null) Color(0xFFFFE6E6) else Color.White,
+                focusedContainerColor = if (errorMessage != null) Color(0xFFFFE6E6) else Color.White,
+                unfocusedIndicatorColor = if (errorMessage != null) Color.Red else Color.Transparent,
+                focusedIndicatorColor = if (errorMessage != null) Color.Red else Color.Transparent
+            ),
+            isError = errorMessage != null
         )
-    )
+
+        // Mostrar mensaje de error
+        if (!errorMessage.isNullOrEmpty()) {
+            Text(
+                text = errorMessage,
+                color = Color.Red,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+            )
+        }
+    }
 }
 
-////////////////////////////////Boton
 @Composable
-fun LoginButton(loginEnable: Boolean, onLoginSelected: () -> Unit) {
+fun LoginButton(
+    loginEnable: Boolean,
+    isLoading: Boolean = false,
+    onLoginSelected: () -> Unit
+) {
     Button(
         onClick = { onLoginSelected() },
-
         modifier = Modifier
-
             .width(330.dp)
-            .height(48.dp), colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Black,  //// :)antes backgroundColor
-            contentColor = Color.White,    //   :)color del texto o ícono
-            disabledContainerColor = Color(0xFFEB833D),  //  fondo cuando está desactivado
-            disabledContentColor = Color.White    // texto cuando está desactivado
-
-        ), enabled = loginEnable
-
-
+            .height(48.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Black,
+            contentColor = Color.White,
+            disabledContainerColor = Color(0xFFEB833D),
+            disabledContentColor = Color.White
+        ),
+        enabled = loginEnable && !isLoading
     ) {
-        Text(
-            "Iniciar Secion",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
-
+        if (isLoading) {
+            CircularProgressIndicator(
+                color = Color.White,
+                modifier = Modifier.size(20.dp)
+            )
+        } else {
+            Text(
+                "Iniciar Sesión",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
 
@@ -177,64 +277,73 @@ fun LoginButton(loginEnable: Boolean, onLoginSelected: () -> Unit) {
 fun RegistrarseBotton(loginEnable: Boolean, onLoginSelected: () -> Unit) {
     Button(
         onClick = { onLoginSelected() },
-
         modifier = Modifier
-
             .width(330.dp)
-            .height(48.dp), colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Black,  //// :)antes backgroundColor
-            contentColor = Color.White,    //   :)color del texto o ícono
-            disabledContainerColor = Color.Black,  // 🔥 fondo cuando está desactivado
-            disabledContentColor = Color.White     // texto cuando está desactivado
-
-        ), enabled = loginEnable
-
-
+            .height(48.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Black,
+            contentColor = Color.White,
+            disabledContainerColor = Color.Black,
+            disabledContentColor = Color.White
+        ),
+        enabled = loginEnable
     ) {
         Text(
             "Registrarse",
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )
-
     }
-
 }
 
-////////////////////////////////////////////////////correo
 @Composable
-fun EmailField(email: String, onTextFieldChanged: (String) -> Unit) {
-
-////////////////////////////////////////////////////////////////////////////////////////////caja textfieldEmail
-
-    TextField(
-        modifier = Modifier
-            .width(320.dp)
-            .height(56.dp)
-            .fillMaxWidth(),
-
-
-        placeholder = {
-            Text(
-                text = "Email",
-                color = Color(0xFF4B3621),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                fontStyle = FontStyle.Italic // opcional, si quieres cursiva también
-            )
-
-        },
-        value = email,
-        onValueChange = { onTextFieldChanged(it) },   //eso(it) que se escribe lo guarda en mi variable email y lo recuerda //onValueChange es la pulsacion de mi teclado lo activa y por lo tanto hace lo que ya escribi
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-        singleLine = true,  //no permite los enter/no permite que el texto es mas largo que el ancjo del campo
-        maxLines = 1,      //escribes en una sola linea infinita (mas flexible) si colocas 2 ahora 2 lineas .
-        colors = TextFieldDefaults.colors(
-            focusedTextColor = Color(0xFF4B3621),
-            unfocusedContainerColor = Color.White
-
+fun EmailField(
+    email: String,
+    onTextFieldChanged: (String) -> Unit,
+    errorMessage: String?
+) {
+    Column {
+        TextField(
+            modifier = Modifier
+                .width(320.dp)
+                .height(56.dp)
+                .fillMaxWidth()
+                .background(
+                    if (errorMessage != null) Color(0xFFFFE6E6) else Color.White,
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
+                ),
+            placeholder = {
+                Text(
+                    text = "Email",
+                    color = Color(0xFF4B3621),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Italic
+                )
+            },
+            value = email,
+            onValueChange = { onTextFieldChanged(it) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            singleLine = true,
+            maxLines = 1,
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = Color(0xFF4B3621),
+                unfocusedContainerColor = if (errorMessage != null) Color(0xFFFFE6E6) else Color.White,
+                focusedContainerColor = if (errorMessage != null) Color(0xFFFFE6E6) else Color.White,
+                unfocusedIndicatorColor = if (errorMessage != null) Color.Red else Color.Transparent,
+                focusedIndicatorColor = if (errorMessage != null) Color.Red else Color.Transparent
+            ),
+            isError = errorMessage != null
         )
 
-
-    )
+        // Mostrar mensaje de error
+        if (!errorMessage.isNullOrEmpty()) {
+            Text(
+                text = errorMessage,
+                color = Color.Red,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+            )
+        }
+    }
 }
