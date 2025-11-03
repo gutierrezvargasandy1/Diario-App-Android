@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Email
@@ -36,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 
@@ -43,7 +46,9 @@ import androidx.navigation.NavHostController
 val BotonPrincipalColor = Color(0xFF6200EE)
 val TextoBotonColor = Color.White
 val FondoCampoColor = Color(0xFFFFCC89)
-val PanelSuperiorColor = Color(0xFF5D2600) // Café oscuro
+val PanelSuperiorColor = Color(0xFF5D2600)
+val ErrorColor = Color(0xFFFF5252)
+val FondoCampoErrorColor = Color(0xFFFFE6E6)
 
 @Composable
 fun Registro(navController: NavHostController) {
@@ -56,7 +61,6 @@ fun Registro(navController: NavHostController) {
     // Navegar de regreso cuando el registro sea exitoso
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
-            // Esto se ejecuta automáticamente en el hilo principal
             navController.popBackStack()
         }
     }
@@ -108,11 +112,9 @@ fun Registro(navController: NavHostController) {
                 onEmailChange = viewModel::onEmailChange,
                 onPasswordChange = viewModel::onPasswordChange,
                 onRegistrar = {
-                    // Usar LaunchedEffect para manejar la navegación de forma segura
                     viewModel.registrarUsuario()
                 },
                 onCancelar = {
-                    // Esto se ejecuta en el hilo principal automáticamente
                     navController.popBackStack()
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -146,14 +148,21 @@ fun LoginForm(
     onCancelar: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = modifier
+            .verticalScroll(scrollState)
+            .padding(bottom = 16.dp)
+    ) {
         Spacer(modifier = Modifier.height(8.dp))
 
         // Campo Email
         CampoTexto(
             value = state.email,
             onValueChange = onEmailChange,
-            placeholder = "Email"
+            placeholder = "Email",
+            errorMessage = state.emailError
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -162,7 +171,8 @@ fun LoginForm(
         CampoTexto(
             value = state.nombre,
             onValueChange = onNombreChange,
-            placeholder = "Nombre"
+            placeholder = "Nombre",
+            errorMessage = state.nombreError
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -171,7 +181,8 @@ fun LoginForm(
         CampoTexto(
             value = state.apellidoPaterno,
             onValueChange = onApellidoPaternoChange,
-            placeholder = "Apellido Paterno"
+            placeholder = "Apellido Paterno",
+            errorMessage = state.apellidoPaternoError
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -180,7 +191,8 @@ fun LoginForm(
         CampoTexto(
             value = state.apellidoMaterno,
             onValueChange = onApellidoMaternoChange,
-            placeholder = "Apellido Materno"
+            placeholder = "Apellido Materno",
+            errorMessage = state.apellidoMaternoError
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -189,16 +201,18 @@ fun LoginForm(
         CampoTexto(
             value = state.fechaNacimiento,
             onValueChange = onFechaNacimientoChange,
-            placeholder = "Fecha de Nacimiento (DD/MM/AAAA)"
+            placeholder = "Fecha de Nacimiento (DD/MM/AAAA)",
+            errorMessage = state.fechaNacimientoError
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Campo Password
+        // Campo Password (SIN INDICADOR DE FORTALEZA)
         CampoTexto(
             value = state.password,
             onValueChange = onPasswordChange,
             placeholder = "Contraseña",
+            errorMessage = state.passwordError,
             isPassword = true
         )
 
@@ -207,11 +221,15 @@ fun LoginForm(
         // Botones
         BotonesRegistro(
             onRegistrar = onRegistrar,
-            onCancelar = onCancelar
+            onCancelar = onCancelar,
+            isFormValid = state.isFormValid
         )
 
         Spacer(modifier = Modifier.height(24.dp))
         SocialLogin()
+
+        // Espacio adicional para mejor scroll
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -220,32 +238,51 @@ fun CampoTexto(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
+    errorMessage: String?,
     isPassword: Boolean = false
 ) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(FondoCampoColor, shape = RoundedCornerShape(8.dp)),
-        placeholder = { Text(placeholder) },
-        visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
-        singleLine = true,
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = FondoCampoColor,
-            unfocusedContainerColor = FondoCampoColor,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedTextColor = Color.Black,
-            unfocusedTextColor = Color.Black
+    Column {
+        TextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    if (errorMessage != null) FondoCampoErrorColor else FondoCampoColor,
+                    shape = RoundedCornerShape(8.dp)
+                ),
+            placeholder = { Text(placeholder) },
+            visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
+            singleLine = true,
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = if (errorMessage != null) FondoCampoErrorColor else FondoCampoColor,
+                unfocusedContainerColor = if (errorMessage != null) FondoCampoErrorColor else FondoCampoColor,
+                focusedIndicatorColor = if (errorMessage != null) ErrorColor else Color.Transparent,
+                unfocusedIndicatorColor = if (errorMessage != null) ErrorColor else Color.Transparent,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                cursorColor = Color.Black
+            ),
+            isError = errorMessage != null
         )
-    )
+
+        // Mostrar mensaje de error si existe
+        if (!errorMessage.isNullOrEmpty()) {
+            Text(
+                text = errorMessage,
+                color = ErrorColor,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+            )
+        }
+    }
 }
 
 @Composable
 fun BotonesRegistro(
     onRegistrar: () -> Unit,
-    onCancelar: () -> Unit
+    onCancelar: () -> Unit,
+    isFormValid: Boolean
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -253,7 +290,10 @@ fun BotonesRegistro(
     ) {
         Button(
             onClick = onRegistrar,
-            colors = ButtonDefaults.buttonColors(containerColor = BotonPrincipalColor)
+            enabled = isFormValid,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (isFormValid) BotonPrincipalColor else Color.Gray
+            )
         ) {
             Text("Registrarse", color = TextoBotonColor)
         }

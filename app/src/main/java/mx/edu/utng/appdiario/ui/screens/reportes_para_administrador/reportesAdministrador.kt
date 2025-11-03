@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,10 +27,12 @@ import androidx.navigation.NavController
 
 fun ReportesAdmin(navController: NavController)
 {
+    val scrollState = rememberScrollState() ////val para el scrol hay que recordar
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5E6D3)),
+            .background(Color(0xFFF5E6D3))
+            .verticalScroll(scrollState), /////Este es el scroll,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
