@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -86,6 +87,9 @@ fun AdminHome(navController: NavController) {
             ) {
                 when (selectedTab) {
                     "Inicio" -> {
+                        LaunchedEffect(Unit) {
+                            viewModel.actualizarDatosDashboard()
+                        }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             DashboardCard(
                                 title = "Usuarios Registrados",

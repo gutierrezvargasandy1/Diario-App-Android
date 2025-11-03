@@ -3,9 +3,13 @@ package mx.edu.utng.appdiario.local.entity
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Entity(
     tableName = "usuario",
+    indices = [Index(value = ["email"], unique = true)] // 🔹 Hace único el email
 )
 data class Usuario(
     @PrimaryKey(autoGenerate = true)
@@ -16,5 +20,7 @@ data class Usuario(
     val fechNaci: String,
     val email: String,
     val password: String,
+    val fechaRegistro: String = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        .format(Date()),
     val tipo: TipoUsuario
 )

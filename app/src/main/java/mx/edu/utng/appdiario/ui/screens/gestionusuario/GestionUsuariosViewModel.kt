@@ -55,7 +55,7 @@ class GestionUsuariosViewModel(
                             TipoUsuario.ADMIN -> "Administrador"
                             TipoUsuario.NORMAL -> "Usuario"
                         },
-                        fechaRegistro = entity.fechNaci
+                        fechaRegistro = entity.fechaRegistro // 🔹 Guardamos timestamp
                     )
                 }
 
