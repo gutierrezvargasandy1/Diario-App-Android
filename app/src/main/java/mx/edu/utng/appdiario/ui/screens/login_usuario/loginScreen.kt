@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import mx.edu.utng.appdiario.R
-import mx.edu.utng.negv.appdiariopersonal.model.LoginRequest
+import mx.edu.utng.appdiario.model.LoginRequest
 
 
 

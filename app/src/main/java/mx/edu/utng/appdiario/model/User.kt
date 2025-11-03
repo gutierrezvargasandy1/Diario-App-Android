@@ -1,4 +1,4 @@
-package mx.edu.utng.negv.appdiariopersonal.model
+package mx.edu.utng.appdiario.model
 
 data class User(
  val id: Int,
