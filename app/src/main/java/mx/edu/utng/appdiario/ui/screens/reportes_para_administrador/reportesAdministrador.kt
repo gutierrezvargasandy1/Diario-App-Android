@@ -2,14 +2,7 @@ package mx.edu.utng.appdiario.ui.screens.reportes_para_administrador
 
 import android.graphics.Color as AndroidColor
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -19,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -40,14 +34,14 @@ fun ReportesAdmin(navController: NavController) {
     )
     val state by viewModel.state.collectAsState()
 
-fun ReportesAdmin(navController: NavController)
-{
-    val scrollState = rememberScrollState() ////val para el scrol hay que recordar
+    // 🔹 Scroll vertical
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFF5E6D3))
-            .verticalScroll(scrollState), /////Este es el scroll,
+            .verticalScroll(scrollState), // ✅ Habilita scroll
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -56,12 +50,12 @@ fun ReportesAdmin(navController: NavController)
             modifier = Modifier
                 .fillMaxWidth()
                 .height(80.dp)
-                .background(androidx.compose.ui.graphics.Color(0xFF6D3B1A)),
+                .background(Color(0xFF6D3B1A)),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "REPORTES",
-                color = androidx.compose.ui.graphics.Color.White,
+                color = Color.White,
                 fontSize = 30.sp
             )
         }
@@ -72,7 +66,7 @@ fun ReportesAdmin(navController: NavController)
         Text(
             text = "Usuarios por Mes",
             fontSize = 20.sp,
-            color = androidx.compose.ui.graphics.Color(0xFF4E2A0E)
+            color = Color(0xFF4E2A0E)
         )
 
         AndroidView(
@@ -96,8 +90,7 @@ fun ReportesAdmin(navController: NavController)
                     valueTextColor = AndroidColor.BLACK
                     valueTextSize = 12f
                 }
-                val barData = BarData(dataSet)
-                chart.data = barData
+                chart.data = BarData(dataSet)
                 chart.xAxis.valueFormatter = IndexAxisValueFormatter(
                     state.usuariosPromedioPorMes.keys.toList()
                 )
@@ -107,11 +100,11 @@ fun ReportesAdmin(navController: NavController)
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // 🔹 Gráfico de usuarios por tipo (claramente solo 2 tipos)
+        // 🔹 Gráfico de usuarios por tipo
         Text(
             text = "Usuarios por Tipo",
             fontSize = 20.sp,
-            color = androidx.compose.ui.graphics.Color(0xFF4E2A0E)
+            color = Color(0xFF4E2A0E)
         )
 
         AndroidView(
@@ -140,5 +133,7 @@ fun ReportesAdmin(navController: NavController)
                 chart.invalidate()
             }
         )
+
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
