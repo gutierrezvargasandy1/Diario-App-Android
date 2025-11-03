@@ -4,10 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,7 +41,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-
+import mx.edu.utng.appdiario.navigation.navegacion_global.NavRoutes
+import mx.edu.utng.appdiario.ui.screens.gestionusuario.GestionUsuarios
+import mx.edu.utng.appdiario.ui.screens.reportes_para_administrador.ReportesAdmin
 
 
 @Composable
@@ -85,8 +91,8 @@ fun AdminHome(navController: NavController) {
                             )
                         }
                     }
-                    "Usuarios" -> Text("Pantalla de Usuarios")
-                    "Reportes" -> Text("Pantalla de Reportes")
+                    "Usuarios" -> {GestionUsuarios(navController = navController) }
+                    "Reportes" -> {ReportesAdmin(navController = navController) }
                 }
             }
         }
@@ -97,23 +103,49 @@ fun AdminHome(navController: NavController) {
 // ✅ Barra superior
 @Composable
 fun TopAdmin(navController: NavController) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(70.dp)
-            .background(Color(0xFF6D3B1A)),
-        contentAlignment = Alignment.CenterEnd
+    // 🔹 Usamos Surface para adaptabilidad y sombra ligera
+    Surface(
+        color = Color(0xFF6D3B1A),
+        shadowElevation = 4.dp
     ) {
-        Button(
-            onClick = { /* aquí será logout */ },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2A679)),
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.padding(end = 16.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 56.dp, max = 70.dp) // 🔹 Altura flexible (responsive)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Cerrar Sesión", color = Color.Black)
+            // 🔹 Texto o logo opcional (izquierda)
+            Text(
+                text = "Panel Admin",
+                color = Color.White,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f)
+            )
+
+            // 🔹 Botón de cierre de sesión (derecha)
+            Button(
+                onClick = {
+                    navController.navigate(NavRoutes.LOGIN)
+
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2A679)),
+                shape = RoundedCornerShape(12.dp),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+            ) {
+                Text(
+                    text = "Cerrar Sesión",
+                    color = Color.Black,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
         }
     }
 }
+
 
 
 // ✅ Título centrado
