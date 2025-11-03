@@ -1,4 +1,4 @@
-package mx.edu.utng.appdiario.ui.screens.registro_usuario
+package mx.edu.utng.appdiario.ui.screens.gestionusuario
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -6,16 +6,16 @@ import androidx.lifecycle.ViewModelProvider
 import mx.edu.utng.appdiario.Repository.UsuarioRepository
 import mx.edu.utng.appdiario.local.database.AppDatabase
 
-class RegistroViewModelFactory(
+class GestionUsuariosViewModelFactory(
     private val context: Context
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(RegistroViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(GestionUsuariosViewModel::class.java)) {
             val database = AppDatabase.getDatabase(context)
             val repository = UsuarioRepository(database.usuarioDao())
-            return RegistroViewModel(repository) as T
+            return GestionUsuariosViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

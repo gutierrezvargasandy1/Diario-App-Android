@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,12 +37,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import mx.edu.utng.appdiario.navigation.navegacion_global.NavRoutes
+import mx.edu.utng.appdiario.ui.screens.dashboardAdministrador.viewModel.DashboardViewModel
+import mx.edu.utng.appdiario.ui.screens.dashboardAdministrador.viewModel.DashboardViewModelFactory
 import mx.edu.utng.appdiario.ui.screens.gestionusuario.GestionUsuarios
 import mx.edu.utng.appdiario.ui.screens.reportes_para_administrador.ReportesAdmin
 
@@ -50,7 +55,11 @@ import mx.edu.utng.appdiario.ui.screens.reportes_para_administrador.ReportesAdmi
 
 fun AdminHome(navController: NavController) {
     var selectedTab by remember { mutableStateOf("Inicio") }
-
+    val context = LocalContext.current
+    val viewModel: DashboardViewModel = viewModel(
+        factory = DashboardViewModelFactory(context)
+    )
+    val state by viewModel.state.collectAsState()
     Scaffold(
         topBar = { TopAdmin(navController = navController) },
         bottomBar = {
@@ -80,13 +89,13 @@ fun AdminHome(navController: NavController) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             DashboardCard(
                                 title = "Usuarios Registrados",
-                                value = "8",
+                                value = state.cantidadUsuarios.toString(),
                                 subtitle = "Usuarios Activos en la App"
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             DashboardCard(
                                 title = "Sección Popular",
-                                value = "Receta",
+                                value = state.tipoTarjetaMasUsado,
                                 subtitle = "Más consultada"
                             )
                         }

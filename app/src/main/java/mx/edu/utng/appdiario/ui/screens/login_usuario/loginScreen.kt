@@ -91,17 +91,14 @@ fun Login(modifier: Modifier, navController:NavController) {  //colocar el param
 
 
         // 🔑 CONEXIÓN DEL BOTÓN: Llama al AuthViewModel
-        LoginButton(loginEnable) {
-            val request = LoginRequest(
-                email = emailState,
-                password = passwordState
-            )
-             // <--- ¡Esto inicia la secuencia de seguridad!
+        LoginButton(loginEnable = true ) {
+            navController.navigate("adminHome")
+
         }
 
 
         Spacer(modifier = Modifier.padding(8.dp))
-        RegistrarseBotton(loginEnable = true) {navController.navigate("adminHome") }//boton registrarse nav
+        RegistrarseBotton(loginEnable = true) {navController.navigate("registro") }//boton registrarse nav
 
     }
 }

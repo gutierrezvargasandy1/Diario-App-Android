@@ -1,4 +1,5 @@
 package mx.edu.utng.appdiario.ui.screens.registro_usuario
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,17 +26,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 
 // Colores personalizados
@@ -45,6 +47,20 @@ val PanelSuperiorColor = Color(0xFF5D2600) // Café oscuro
 
 @Composable
 fun Registro(navController: NavHostController) {
+    val context = LocalContext.current
+    val viewModel: RegistroViewModel = viewModel(
+        factory = RegistroViewModelFactory(context)
+    )
+    val state by viewModel.state.collectAsState()
+
+    // Navegar de regreso cuando el registro sea exitoso
+    LaunchedEffect(state.isSuccess) {
+        if (state.isSuccess) {
+            // Esto se ejecuta automáticamente en el hilo principal
+            navController.popBackStack()
+        }
+    }
+
     Box(
         Modifier
             .fillMaxSize()
@@ -73,64 +89,142 @@ fun Registro(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Contenido del formulario (tu login original)
-            Login(Modifier.align(Alignment.CenterHorizontally))
+            // Mostrar errores
+            state.error?.let { error ->
+                Text(
+                    text = error,
+                    color = Color.Red,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+
+            // Contenido del formulario
+            LoginForm(
+                state = state,
+                onNombreChange = viewModel::onNombreChange,
+                onApellidoPaternoChange = viewModel::onApellidoPaternoChange,
+                onApellidoMaternoChange = viewModel::onApellidoMaternoChange,
+                onFechaNacimientoChange = viewModel::onFechaNacimientoChange,
+                onEmailChange = viewModel::onEmailChange,
+                onPasswordChange = viewModel::onPasswordChange,
+                onRegistrar = {
+                    // Usar LaunchedEffect para manejar la navegación de forma segura
+                    viewModel.registrarUsuario()
+                },
+                onCancelar = {
+                    // Esto se ejecuta en el hilo principal automáticamente
+                    navController.popBackStack()
+                },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+        }
+
+        // Loading overlay
+        if (state.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Color.White)
+            }
         }
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
 @Composable
-fun Login(modifier: Modifier) {
+fun LoginForm(
+    state: RegistroState,
+    onNombreChange: (String) -> Unit,
+    onApellidoPaternoChange: (String) -> Unit,
+    onApellidoMaternoChange: (String) -> Unit,
+    onFechaNacimientoChange: (String) -> Unit,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onRegistrar: () -> Unit,
+    onCancelar: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Spacer(modifier = Modifier.height(8.dp))
 
-    Spacer(modifier = Modifier.height(8.dp))
-    EmailCom()
-    Spacer(modifier = Modifier.height(8.dp))
-    NombreCom()
-    Spacer(modifier = Modifier.height(8.dp))
-    ApellidoCom()
-    Spacer(modifier = Modifier.height(8.dp))
-    FechaNacimientoCom()
-    Spacer(modifier = Modifier.height(8.dp))
-    PasswordCom()
-    Spacer(modifier = Modifier.height(16.dp))
-    BotonesRegistro()
-    Spacer(modifier = Modifier.height(24.dp))
-    SocialLogin()
+        // Campo Email
+        CampoTexto(
+            value = state.email,
+            onValueChange = onEmailChange,
+            placeholder = "Email"
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Campo Nombre
+        CampoTexto(
+            value = state.nombre,
+            onValueChange = onNombreChange,
+            placeholder = "Nombre"
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Campo Apellido Paterno
+        CampoTexto(
+            value = state.apellidoPaterno,
+            onValueChange = onApellidoPaternoChange,
+            placeholder = "Apellido Paterno"
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Campo Apellido Materno
+        CampoTexto(
+            value = state.apellidoMaterno,
+            onValueChange = onApellidoMaternoChange,
+            placeholder = "Apellido Materno"
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Campo Fecha Nacimiento
+        CampoTexto(
+            value = state.fechaNacimiento,
+            onValueChange = onFechaNacimientoChange,
+            placeholder = "Fecha de Nacimiento (DD/MM/AAAA)"
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Campo Password
+        CampoTexto(
+            value = state.password,
+            onValueChange = onPasswordChange,
+            placeholder = "Contraseña",
+            isPassword = true
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Botones
+        BotonesRegistro(
+            onRegistrar = onRegistrar,
+            onCancelar = onCancelar
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+        SocialLogin()
+    }
 }
 
 @Composable
-fun EmailCom() {
-    CampoTexto(placeholder = "Enter Email")
-}
-
-@Composable
-fun NombreCom() {
-    CampoTexto(placeholder = "Nombre")
-}
-
-@Composable
-fun ApellidoCom() {
-    CampoTexto(placeholder = "Apellido")
-}
-
-@Composable
-fun FechaNacimientoCom() {
-    CampoTexto(placeholder = "Día de Nacimiento")
-}
-
-@Composable
-fun PasswordCom() {
-    CampoTexto(placeholder = "Contraseña", isPassword = true)
-}
-
-@Composable
-fun CampoTexto(placeholder: String, isPassword: Boolean = false) {
-    var text by remember { mutableStateOf("") }
-
+fun CampoTexto(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    isPassword: Boolean = false
+) {
     TextField(
-        value = text,
-        onValueChange = { text = it },
+        value = value,
+        onValueChange = onValueChange,
         modifier = Modifier
             .fillMaxWidth()
             .background(FondoCampoColor, shape = RoundedCornerShape(8.dp)),
@@ -149,19 +243,22 @@ fun CampoTexto(placeholder: String, isPassword: Boolean = false) {
 }
 
 @Composable
-fun BotonesRegistro() {
+fun BotonesRegistro(
+    onRegistrar: () -> Unit,
+    onCancelar: () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Button(
-            onClick = {},
+            onClick = onRegistrar,
             colors = ButtonDefaults.buttonColors(containerColor = BotonPrincipalColor)
         ) {
             Text("Registrarse", color = TextoBotonColor)
         }
         OutlinedButton(
-            onClick = {},
+            onClick = onCancelar,
             colors = ButtonDefaults.outlinedButtonColors(contentColor = BotonPrincipalColor)
         ) {
             Text("Cancelar")
@@ -190,4 +287,3 @@ fun SocialLogin() {
         }
     }
 }
-
