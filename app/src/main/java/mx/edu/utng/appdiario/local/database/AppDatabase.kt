@@ -13,7 +13,7 @@ import mx.edu.utng.appdiario.local.entity.Usuario
 
 @Database(
     entities = [Usuario::class, Tarjeta::class, Nota::class],
-    version = 1,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -32,7 +32,8 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "DiarioDB"
-                ).build()
+                ).fallbackToDestructiveMigration() // 🔹 Borrar y recrear la DB
+                    .build()
                 INSTANCE = instance
                 instance
             }
