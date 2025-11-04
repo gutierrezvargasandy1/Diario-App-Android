@@ -3,7 +3,6 @@ package mx.edu.utng.appdiario.navigation.barra_navegacion_admin
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -15,8 +14,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import mx.edu.utng.appdiario.ui.screens.gestionusuario.GestionUsuarios
-import mx.edu.utng.appdiario.ui.screens.reportes_para_administrador.ReportesAdmin
+import mx.edu.utng.appdiario.ui.screens.administrador.gestionusuario.GestionUsuarios
+import mx.edu.utng.appdiario.ui.screens.administrador.reportes_para_administrador.ReportesAdmin
 
 // 🔹 Pantalla principal con barra inferior
 @Composable

@@ -6,11 +6,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import mx.edu.utng.appdiario.navigation.barra_navegacion_admin.NavegacionAdmin
 import mx.edu.utng.appdiario.ui.screens.cliente.DashboardScreen
-import mx.edu.utng.appdiario.ui.screens.dashboardAdministrador.AdminHome
-import mx.edu.utng.appdiario.ui.screens.gestionusuario.GestionUsuarios
-import mx.edu.utng.appdiario.ui.screens.login_usuario.LoginScreen
-import mx.edu.utng.appdiario.ui.screens.registro_usuario.Registro
-import mx.edu.utng.appdiario.ui.screens.reportes_para_administrador.ReportesAdmin
+import mx.edu.utng.appdiario.ui.screens.administrador.dashboardAdministrador.AdminHome
+import mx.edu.utng.appdiario.ui.screens.administrador.gestionusuario.GestionUsuarios
+import mx.edu.utng.appdiario.ui.screens.auth.login_usuario.LoginScreen
+import mx.edu.utng.appdiario.ui.screens.auth.registro_usuario.Registro
+import mx.edu.utng.appdiario.ui.screens.administrador.reportes_para_administrador.ReportesAdmin
 
 object NavRoutes {
     const val ADMIN_HOME = "adminHome"
