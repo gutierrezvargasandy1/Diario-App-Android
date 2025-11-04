@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+import androidx.navigation.NavHostController
 
 
 // Colores personalizados
@@ -32,7 +32,7 @@ val FondoBotonColor = Color(0xFFFFCC89)
 val PanelCafeColor = Color(0xFF5D2600)
 
 @Composable
-fun DashboardScreen() {
+fun DashboardScreen(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -165,8 +165,3 @@ fun BottomNavigationBar(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun DashboardPreview() {
-    DashboardScreen()
-}

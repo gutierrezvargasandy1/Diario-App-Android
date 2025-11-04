@@ -70,7 +70,7 @@ fun LoginScreen(navController: NavHostController) {
 
     LaunchedEffect(navigateToUser) {
         if (navigateToUser) {
-            navController.navigate("userHome") {
+            navController.navigate("homeNormal") {
                 popUpTo("login") { inclusive = true }
             }
             viewModel.onNavigateToUserCompleted()

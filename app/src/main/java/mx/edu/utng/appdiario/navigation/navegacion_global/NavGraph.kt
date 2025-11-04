@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import mx.edu.utng.appdiario.navigation.barra_navegacion_admin.NavegacionAdmin
+import mx.edu.utng.appdiario.ui.screens.cliente.DashboardScreen
 import mx.edu.utng.appdiario.ui.screens.dashboardAdministrador.AdminHome
 import mx.edu.utng.appdiario.ui.screens.gestionusuario.GestionUsuarios
 import mx.edu.utng.appdiario.ui.screens.login_usuario.LoginScreen
@@ -18,6 +19,8 @@ object NavRoutes {
     const val LOGIN = "login"
     const val DASHBOARD_ADMIN = "dashboard_admin"
     const val REGISTRO = "registro"
+
+    const val HOME_NORMAL = "homeNormal"
 }
 
 @Composable
@@ -45,5 +48,7 @@ fun NavegacionApp(navController: NavHostController) {
 
         // Pantalla Reportes
         composable(NavRoutes.REPORTES) { ReportesAdmin(navController = navController) }
+
+        composable(NavRoutes.HOME_NORMAL) {DashboardScreen(navController = navController)}
     }
 }

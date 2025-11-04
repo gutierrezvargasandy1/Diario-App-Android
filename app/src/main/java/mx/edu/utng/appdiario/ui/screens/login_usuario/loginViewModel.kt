@@ -11,37 +11,30 @@ import mx.edu.utng.appdiario.local.entity.TipoUsuario
 
 class LoginViewModel(private val repository: UsuarioRepository) : ViewModel() {
 
-    //////////////////////////////CORREO
     private val _email = MutableLiveData<String>()
     val email: LiveData<String> = _email
 
-    /////////////////////////////////PASSWORD
     private val _password = MutableLiveData<String>()
     val password: LiveData<String> = _password
 
-    ///////////////////////////////////LOGINENABLE --mi boton
     private val _loginEnable = MutableLiveData<Boolean>()
     val loginEnable: LiveData<Boolean> = _loginEnable
 
-    ////////////////////////////// EVENTO DE NAVEGACIÓN para mi boton registrarse
     private val _navigateToRegister = MutableLiveData<Boolean>()
     val navigateToRegister: LiveData<Boolean> = _navigateToRegister
 
-    ////////////////////////////// Navegación después de login exitoso
     private val _navigateToAdmin = MutableLiveData<Boolean>()
     val navigateToAdmin: LiveData<Boolean> = _navigateToAdmin
 
     private val _navigateToUser = MutableLiveData<Boolean>()
     val navigateToUser: LiveData<Boolean> = _navigateToUser
 
-    ////////////////////////////// Estados de carga y error
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
-    ////////////////////////////// Mensajes de error específicos
     private val _emailError = MutableLiveData<String?>()
     val emailError: LiveData<String?> = _emailError
 
@@ -111,6 +104,7 @@ class LoginViewModel(private val repository: UsuarioRepository) : ViewModel() {
                 when (usuario.tipo) {
                     TipoUsuario.ADMIN -> _navigateToAdmin.value = true
                     TipoUsuario.NORMAL -> _navigateToUser.value = true
+                    else -> _errorMessage.value = "Tipo de usuario no reconocido"
                 }
 
             } catch (e: Exception) {
