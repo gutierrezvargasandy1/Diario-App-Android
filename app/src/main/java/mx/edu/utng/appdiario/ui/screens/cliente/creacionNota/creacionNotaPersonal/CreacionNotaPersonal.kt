@@ -1,4 +1,4 @@
-package mx.edu.utng.appdiario.ui.screens.cliente.CreacionNota
+package mx.edu.utng.appdiario.ui.screens.cliente.creacionNota.creacionNotaPersonal
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,9 +21,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -46,9 +46,10 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 @Composable
-fun CreacionNotaReceta() {
+fun CreacionNotaPersonal(navController: NavController) {
     var title by remember { mutableStateOf(TextFieldValue("")) }
     var text by remember { mutableStateOf(TextFieldValue("")) }
 
@@ -119,12 +120,12 @@ fun CreacionNotaReceta() {
                 verticalAlignment = Alignment.Companion.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = "Resetas",
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Personal",
                     tint = Color.Companion.Red
                 )
                 Text(
-                    text = "Resetas",
+                    text = "Personal",
                     color = Color.Companion.Black,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Companion.Bold
@@ -224,7 +225,7 @@ fun CreacionNotaReceta() {
                 }
 
                 Icon(
-                    imageVector = Icons.Default.Add,
+                    imageVector = Icons.Default.Mic,
                     contentDescription = "Mic",
                     tint = Color.Companion.Black,
                     modifier = Modifier.Companion.size(32.dp)
@@ -242,29 +243,7 @@ fun CreacionNotaReceta() {
             Spacer(modifier = Modifier.Companion.height(16.dp))
         }
 
-        // ---- Barra inferior fija ----
-        Row(
-            modifier = Modifier.Companion
-                .fillMaxWidth()
-                .align(Alignment.Companion.BottomCenter)
-                .background(Color(0xFF6E3B09))
-                .padding(vertical = 6.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.Companion.CenterVertically
-        ) {
-            Icon(Icons.Default.Home, contentDescription = "Home", tint = Color.Companion.White)
-            Icon(
-                Icons.Default.List,
-                contentDescription = "Calendario",
-                tint = Color.Companion.White
-            )
-            Icon(Icons.Default.Person, contentDescription = "Perfil", tint = Color.Companion.White)
-        }
+
     }
 }
 
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun ResetaScreenPreview() {
-    CreacionNotaReceta()
-}
