@@ -40,6 +40,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import mx.edu.utng.appdiario.R
+import mx.edu.utng.appdiario.navigation.navegacion_global.NavRoutes
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
@@ -71,8 +72,8 @@ fun LoginScreen(navController: NavHostController) {
 
     LaunchedEffect(navigateToUser) {
         if (navigateToUser) {
-            navController.navigate("barraCliente") {
-                popUpTo("login") { inclusive = true }
+            navController.navigate(NavRoutes.BARRA_CLIENTE) {
+                popUpTo(NavRoutes.LOGIN) { inclusive = true }
             }
             viewModel.onNavigateToUserCompleted()
         }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,7 +23,11 @@ val PanelCafeColor = Color(0xFF5D2600)
 
 @Composable
 
-fun PerfilUsuario(navController: NavHostController, showBottomBar: androidx.compose.runtime.MutableState<Boolean>){
+fun PerfilUsuario(
+    navController: NavHostController,
+    showBottomBar: MutableState<Boolean>,
+    globalNavController: NavHostController
+){
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -70,9 +75,10 @@ fun PerfilUsuario(navController: NavHostController, showBottomBar: androidx.comp
                     // Cerrar la barra inferior
                     showBottomBar.value = false
 
-                    // Navegar a login y limpiar el back stack
-                    navController.navigate(NavRoutes.LOGIN) {
-                        popUpTo(NavRoutes.LOGIN) { inclusive = true }
+                    // Usa el NAVIGADOR GLOBAL para regresar al login
+                    globalNavController.navigate(NavRoutes.LOGIN) {
+                        popUpTo(0)  // elimina todo el historial
+                        launchSingleTop = true
                     }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = PanelCafeColor),
