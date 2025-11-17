@@ -3,18 +3,17 @@ package mx.edu.utng.appdiario.navigation.barra_navegacion_cliente
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import mx.edu.utng.appdiario.navigation.navegacion_global.NavRoutes
-import mx.edu.utng.appdiario.ui.screens.auth.login_usuario.LoginScreen
 import mx.edu.utng.appdiario.ui.screens.cliente.calendario.Calendario
 import mx.edu.utng.appdiario.ui.screens.cliente.creacionNota.creacionNotaActividad.CreacionNotaActividad
 import mx.edu.utng.appdiario.ui.screens.cliente.creacionNota.creacionNotaPersonal.CreacionNotaPersonal
@@ -26,10 +25,10 @@ import mx.edu.utng.appdiario.ui.screens.cliente.notaTipo.notaTipoReceta.NotaTipo
 import mx.edu.utng.appdiario.ui.screens.cliente.perfilUsuario.PerfilUsuario
 
 @Composable
-fun NavegacionCliente(navController: NavController) {
+fun NavegacionCliente(globalNavController: NavHostController) {
     // ✅ Solo un NavController para toda la navegación
     val navController = rememberNavController()
-    val showBottomBar = remember { mutableStateOf(true) }
+    val showBottomBar = rememberSaveable { mutableStateOf(true) }
 
     Scaffold(
         bottomBar = { if (showBottomBar.value) { BottomNavBar(navController) }}
@@ -39,23 +38,38 @@ fun NavegacionCliente(navController: NavController) {
             startDestination = "home",
             modifier = Modifier.padding(innerPadding)
         ) {
-            //Pantalla login(cerrar secion)
-            composable(NavRoutes.LOGIN){LoginScreen(navController)}
-            // Pantallas de la barra inferior
+            // 🔹 Pantallas de la barra inferior
             composable("home") { DashboardScreen(navController) }
             composable("calendario") { Calendario(navController) }
-            composable("usuario") {  PerfilUsuario(navController, showBottomBar) }
+            composable("usuario") { PerfilUsuario(navController, showBottomBar, globalNavController) }
 
-            // Pantallas para crear Notas según su tipo
-            composable(NavRoutes.CREACION_NOTA_PERSONAL) { CreacionNotaPersonal(navController) }
-            composable(NavRoutes.CREACION_NOTA_RECETA) { CreacionNotaReceta(navController) }
-            composable(NavRoutes.CREACION_NOTA_ACTIVIDAD) { CreacionNotaActividad(navController) }
-
+            // Pantallas de crear nota
+            composable(NavRoutes.CREACION_NOTA_PERSONAL) {
+                CreacionNotaPersonal(navController)
+                showBottomBar.value = true // 👈 aseguras que se muestre
+            }
+            composable(NavRoutes.CREACION_NOTA_RECETA) {
+                CreacionNotaReceta(navController)
+                showBottomBar.value = true
+            }
+            composable(NavRoutes.CREACION_NOTA_ACTIVIDAD) {
+                CreacionNotaActividad(navController)
+                showBottomBar.value = true
+            }
 
             // Pantallas de notas
-            composable(NavRoutes.NOTA_TIPO_PERSONAL) { NotaTipoPersonal(navController) }
-            composable(NavRoutes.NOTA_TIPO_RECETA) { NotaTipoReceta(navController) }
-            composable(NavRoutes.NOTA_TIPO_ACTIVIDAD) { NotaTipoActividad(navController) }
+            composable(NavRoutes.NOTA_TIPO_PERSONAL) {
+                NotaTipoPersonal(navController)
+                showBottomBar.value = true
+            }
+            composable(NavRoutes.NOTA_TIPO_RECETA) {
+                NotaTipoReceta(navController)
+                showBottomBar.value = true
+            }
+            composable(NavRoutes.NOTA_TIPO_ACTIVIDAD) {
+                NotaTipoActividad(navController)
+                showBottomBar.value = true
+            }
         }
     }
 }

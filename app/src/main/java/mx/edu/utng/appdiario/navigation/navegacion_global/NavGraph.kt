@@ -97,7 +97,7 @@ fun NavegacionApp(navController: NavHostController) {
         composable(NavRoutes.NOTA_TIPO_PERSONAL) { NotaTipoPersonal(navController = navController ) }
         //Recetas
         composable(NavRoutes.NOTA_TIPO_RECETA) {NotaTipoReceta(navController = navController ) }
-        composable(NavRoutes.BARRA_CLIENTE) {NavegacionCliente(navController = navController ) }
+        composable(NavRoutes.BARRA_CLIENTE) {NavegacionCliente(globalNavController = navController ) }
 
 
 

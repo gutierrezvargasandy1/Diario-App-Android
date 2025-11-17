@@ -26,4 +26,7 @@ interface TarjetaDao {
     @Transaction
     @Query("SELECT * FROM Tarjeta WHERE usuarioId = :usuarioId")
     suspend fun obtenerTarjetasConNotasPorUsuario(usuarioId: Int): List<TarjetaConNotas>
+
+    @Query("SELECT * FROM Tarjeta WHERE usuarioId = :userId")
+    suspend fun obtenerTarjetasPorUsuario(userId: Int): List<Tarjeta>
 }
