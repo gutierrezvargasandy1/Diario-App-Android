@@ -15,5 +15,8 @@ class TarjetaRepository (private val tarjetaDao: TarjetaDao) {
 
     suspend fun obtenerPorId(id: Int): Tarjeta? = tarjetaDao.obtenerPorId(id)
 
+    suspend fun obtenerTarjetasPorUsuario(usuarioId: Int): List<Tarjeta> =
+        tarjetaDao.obtenerTarjetasPorUsuario(usuarioId)
+
 
 }
