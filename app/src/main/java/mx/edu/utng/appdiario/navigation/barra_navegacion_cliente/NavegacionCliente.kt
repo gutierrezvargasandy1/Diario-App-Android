@@ -14,19 +14,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import mx.edu.utng.appdiario.navigation.navegacion_global.NavRoutes
-import mx.edu.utng.appdiario.ui.screens.cliente.calendario.Calendario
-import mx.edu.utng.appdiario.ui.screens.cliente.creacionNota.creacionNotaActividad.CreacionNotaActividad
-import mx.edu.utng.appdiario.ui.screens.cliente.creacionNota.creacionNotaPersonal.CreacionNotaPersonal
-import mx.edu.utng.appdiario.ui.screens.cliente.creacionNota.creacionNotaReceta.CreacionNotaReceta
+import mx.edu.utng.appdiario.ui.screens.cliente.DiarioAudioScreen.DiarioAudioScreen
+import mx.edu.utng.appdiario.ui.screens.cliente.DiarioTextoScreen.DiarioTextoScreen
 import mx.edu.utng.appdiario.ui.screens.cliente.dashBoardCliente.DashboardScreen
-import mx.edu.utng.appdiario.ui.screens.cliente.notaTipo.notaTipoActividad.NotaTipoActividad
-import mx.edu.utng.appdiario.ui.screens.cliente.notaTipo.notaTipoPersonal.NotaTipoPersonal
-import mx.edu.utng.appdiario.ui.screens.cliente.notaTipo.notaTipoReceta.NotaTipoReceta
 import mx.edu.utng.appdiario.ui.screens.cliente.perfilUsuario.PerfilUsuario
 
 @Composable
 fun NavegacionCliente(globalNavController: NavHostController) {
-    // ✅ Solo un NavController para toda la navegación
     val navController = rememberNavController()
     val showBottomBar = rememberSaveable { mutableStateOf(true) }
 
@@ -40,34 +34,15 @@ fun NavegacionCliente(globalNavController: NavHostController) {
         ) {
             // 🔹 Pantallas de la barra inferior
             composable("home") { DashboardScreen(navController) }
-            composable("calendario") { Calendario(navController) }
             composable("usuario") { PerfilUsuario(navController, showBottomBar, globalNavController) }
 
-            // Pantallas de crear nota
-            composable(NavRoutes.CREACION_NOTA_PERSONAL) {
-                CreacionNotaPersonal(navController)
-                showBottomBar.value = true // 👈 aseguras que se muestre
-            }
-            composable(NavRoutes.CREACION_NOTA_RECETA) {
-                CreacionNotaReceta(navController)
+            // 🔹 Nuevas pantallas para diarios
+            composable("diario_texto") {
+                DiarioTextoScreen(navController)
                 showBottomBar.value = true
             }
-            composable(NavRoutes.CREACION_NOTA_ACTIVIDAD) {
-                CreacionNotaActividad(navController)
-                showBottomBar.value = true
-            }
-
-            // Pantallas de notas
-            composable(NavRoutes.NOTA_TIPO_PERSONAL) {
-                NotaTipoPersonal(navController)
-                showBottomBar.value = true
-            }
-            composable(NavRoutes.NOTA_TIPO_RECETA) {
-                NotaTipoReceta(navController)
-                showBottomBar.value = true
-            }
-            composable(NavRoutes.NOTA_TIPO_ACTIVIDAD) {
-                NotaTipoActividad(navController)
+            composable("diario_audio") {
+                DiarioAudioScreen(navController)
                 showBottomBar.value = true
             }
         }
@@ -78,7 +53,6 @@ fun NavegacionCliente(globalNavController: NavHostController) {
 fun BottomNavBar(navController: NavHostController) {
     val items = listOf(
         NavItem("home", "🏠", "Inicio"),
-        NavItem("calendario", "📅", "Calendario"),
         NavItem("usuario", "👤", "Usuario")
     )
 
@@ -93,8 +67,8 @@ fun BottomNavBar(navController: NavHostController) {
                 selected = selected,
                 onClick = {
                     navController.navigate(item.route) {
-                        popUpTo(NavRoutes.HOME_NORMAL) {  // 🔹 aquí hacemos pop hasta el Home real
-                            inclusive = false   // dejamos HOME_NORMAL en la pila
+                        popUpTo("home") {
+                            inclusive = false
                             saveState = true
                         }
                         launchSingleTop = true
