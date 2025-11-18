@@ -11,20 +11,11 @@ import mx.edu.utng.appdiario.ui.screens.administrador.dashboardAdministrador.Adm
 import mx.edu.utng.appdiario.ui.screens.auth.registro_usuario.Registro
 import mx.edu.utng.appdiario.ui.screens.administrador.gestionusuario.GestionUsuarios
 import mx.edu.utng.appdiario.ui.screens.administrador.reportes_para_administrador.ReportesAdmin
-import mx.edu.utng.appdiario.ui.screens.cliente.calendario.Calendario
-import mx.edu.utng.appdiario.ui.screens.cliente.creacionNota.creacionNotaActividad.CreacionNotaActividad
-import mx.edu.utng.appdiario.ui.screens.cliente.creacionNota.creacionNotaPersonal.CreacionNotaPersonal
-import mx.edu.utng.appdiario.ui.screens.cliente.creacionNota.creacionNotaReceta.CreacionNotaReceta
-import mx.edu.utng.appdiario.ui.screens.cliente.dashBoardCliente.DashboardScreen
-import mx.edu.utng.appdiario.ui.screens.cliente.notaTipo.notaTipoActividad.NotaTipoActividad
-import mx.edu.utng.appdiario.ui.screens.cliente.notaTipo.notaTipoPersonal.NotaTipoPersonal
-import mx.edu.utng.appdiario.ui.screens.cliente.notaTipo.notaTipoReceta.NotaTipoReceta
 
 object NavRoutes {
     //AUTH##################################
     const val LOGIN = "login"
     const val REGISTRO = "registro"
-
 
     //ADMIN################################
     const val ADMIN_HOME = "adminHome"
@@ -32,24 +23,13 @@ object NavRoutes {
     const val REPORTES = "reportes"
     const val DASHBOARD_ADMIN = "dashboard_admin"
 
-
     //CLIENTE##########################
     const val HOME_NORMAL = "homeNormal"
-    const val BARRA_CLIENTE="barraCliente"
-    const val CALENDARIO="calendario"
+    const val BARRA_CLIENTE = "barraCliente"
 
-
-    //CREACION_NOTA################################
-    const val CREACION_NOTA_ACTIVIDAD="nota_actividad"
-    const val CREACION_NOTA_PERSONAL="nota_personal"
-    const val CREACION_NOTA_RECETA="nota_receta"
-
-
-    //TIPO_NOTA######################################
-    const val NOTA_TIPO_ACTIVIDAD="nota_tipo_actividad"
-    const val NOTA_TIPO_PERSONAL="nota_tipo_personal"
-    const val NOTA_TIPO_RECETA="nota_tipo_receta"
-
+    // NUEVAS PANTALLAS PARA DIARIOS
+    const val DIARIO_TEXTO = "diario_texto"
+    const val DIARIO_AUDIO = "diario_audio"
 }
 
 @Composable
@@ -74,38 +54,32 @@ fun NavegacionApp(navController: NavHostController) {
         composable(NavRoutes.USUARIOS) { GestionUsuarios(navController = navController) }
 
         // Pantalla Reportes
-        composable(NavRoutes.REPORTES) {ReportesAdmin(navController = navController) }
+        composable(NavRoutes.REPORTES) { ReportesAdmin(navController = navController) }
 
-        // Pantalla casa Cliente
-        composable(NavRoutes.HOME_NORMAL) {DashboardScreen(navController = navController)}
+        // Pantalla casa Cliente (ya no se usa directamente, se accede a través de BARRA_CLIENTE)
+        composable(NavRoutes.HOME_NORMAL) {
+            // Redirigir a la barra de navegación del cliente
+            navController.navigate(NavRoutes.BARRA_CLIENTE) {
+                popUpTo(NavRoutes.BARRA_CLIENTE) { inclusive = true }
+            }
+        }
 
-        // Pantalla casa Cliente
-        composable(NavRoutes.CALENDARIO) {Calendario (navController = navController)}
+        // Navegación principal del cliente con barra inferior
+        composable(NavRoutes.BARRA_CLIENTE) {
+            NavegacionCliente(globalNavController = navController)
+        }
 
-        //Pantallas para crear Notas segun su tipo:
+        // NUEVAS PANTALLAS PARA DIARIOS (si necesitas acceso directo)
+        composable(NavRoutes.DIARIO_TEXTO) {
+            // Estas pantallas ahora se manejan dentro de NavegacionCliente
+            // Pero si necesitas acceso directo desde otras partes, las defines aquí
+            // DiarioTextoScreen(navController = navController)
+            navController.navigate(NavRoutes.BARRA_CLIENTE)
+        }
 
-        //Actividad
-        composable(NavRoutes.CREACION_NOTA_ACTIVIDAD) {CreacionNotaActividad(navController = navController ) }
-        //Personal
-        composable(NavRoutes.CREACION_NOTA_PERSONAL) { CreacionNotaPersonal(navController = navController ) }
-        //Recetas
-        composable(NavRoutes.CREACION_NOTA_RECETA) { CreacionNotaReceta(navController = navController ) }
-
-        //Pantallas de notas segun el tipo de tarjeta:
-        composable(NavRoutes.NOTA_TIPO_ACTIVIDAD) {NotaTipoActividad(navController = navController ) }
-        //Personal
-        composable(NavRoutes.NOTA_TIPO_PERSONAL) { NotaTipoPersonal(navController = navController ) }
-        //Recetas
-        composable(NavRoutes.NOTA_TIPO_RECETA) {NotaTipoReceta(navController = navController ) }
-        composable(NavRoutes.BARRA_CLIENTE) {NavegacionCliente(globalNavController = navController ) }
-
-
-
-
-
-
-
-
-
+        composable(NavRoutes.DIARIO_AUDIO) {
+            // DiarioAudioScreen(navController = navController)
+            navController.navigate(NavRoutes.BARRA_CLIENTE)
+        }
     }
 }
