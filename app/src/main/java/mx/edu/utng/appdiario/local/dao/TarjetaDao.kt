@@ -1,8 +1,7 @@
 package mx.edu.utng.appdiario.local.dao
 
 import androidx.room.*
-import mx.edu.utng.appdiario.local.entity.Tarjeta
-import mx.edu.utng.appdiario.local.entity.TarjetaConNotas
+import mx.edu.utng.appdiario.local.entity.Tarjeta.Tarjeta
 
 @Dao
 interface TarjetaDao {
@@ -16,17 +15,9 @@ interface TarjetaDao {
     @Delete
     suspend fun eliminar(tarjeta: Tarjeta)
 
-    @Query("SELECT * FROM Tarjeta")
+    @Query("SELECT * FROM tarjeta")
     suspend fun obtenerTodas(): List<Tarjeta>
 
-    @Query("SELECT * FROM Tarjeta WHERE idTarje = :id")
-    suspend fun obtenerPorId(id: Int): Tarjeta?
-
-    // 🔥 Nuevo método: tarjetas de un usuario con sus notas
-    @Transaction
-    @Query("SELECT * FROM Tarjeta WHERE usuarioId = :usuarioId")
-    suspend fun obtenerTarjetasConNotasPorUsuario(usuarioId: Int): List<TarjetaConNotas>
-
-    @Query("SELECT * FROM Tarjeta WHERE usuarioId = :userId")
-    suspend fun obtenerTarjetasPorUsuario(userId: Int): List<Tarjeta>
+    @Query("SELECT * FROM tarjeta WHERE idUsua = :usuarioId")
+    suspend fun obtenerPorUsuario(usuarioId: Int): List<Tarjeta>
 }

@@ -1,4 +1,4 @@
-package mx.edu.utng.appdiario.local.entity
+package mx.edu.utng.appdiario.local.entity.Ususario
 
 import androidx.room.Entity
 import androidx.room.Index

@@ -5,25 +5,35 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import mx.edu.utng.appdiario.local.dao.NotaDao
-import mx.edu.utng.appdiario.local.dao.TarjetaDao
-import mx.edu.utng.appdiario.local.dao.UsuarioDao
-import mx.edu.utng.appdiario.local.entity.Nota
-import mx.edu.utng.appdiario.local.entity.Tarjeta
-import mx.edu.utng.appdiario.local.entity.Usuario
-import mx.edu.utng.appdiario.local.entity.TipoUsuarioConverter
+import mx.edu.utng.appdiario.local.dao.*
+import mx.edu.utng.appdiario.local.entity.*
+import mx.edu.utng.appdiario.local.entity.Diario.DiarioAudio
+import mx.edu.utng.appdiario.local.entity.Diario.DiarioTexto
+import mx.edu.utng.appdiario.local.entity.Tarjeta.Tarjeta
+import mx.edu.utng.appdiario.local.entity.Tarjeta.TipoTarjetaConverter
+import mx.edu.utng.appdiario.local.entity.Ususario.TipoUsuarioConverter
+import mx.edu.utng.appdiario.local.entity.Ususario.Usuario
 
 @Database(
-    entities = [Usuario::class, Tarjeta::class, Nota::class],
-    version = 3,
+    entities = [
+        Usuario::class,
+        Tarjeta::class,
+        DiarioTexto::class,
+        DiarioAudio::class
+    ],
+    version = 5, // 🔹 Incrementé la versión por los cambios
     exportSchema = false
 )
-@TypeConverters(TipoUsuarioConverter::class) // 👈 Agrega esta línea
+@TypeConverters(
+    TipoUsuarioConverter::class,
+    TipoTarjetaConverter::class
+)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun usuarioDao(): UsuarioDao
     abstract fun tarjetaDao(): TarjetaDao
-    abstract fun notaDao(): NotaDao
+    abstract fun diarioTextoDao(): DiarioTextoDao
+    abstract fun diarioAudioDao(): DiarioAudioDao
 
     companion object {
         @Volatile

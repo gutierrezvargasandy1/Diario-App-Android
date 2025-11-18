@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import mx.edu.utng.appdiario.Repository.UsuarioRepository
-import mx.edu.utng.appdiario.local.entity.TipoUsuario
-import mx.edu.utng.appdiario.local.entity.Usuario
+import mx.edu.utng.appdiario.local.entity.Ususario.TipoUsuario
+import mx.edu.utng.appdiario.local.entity.Ususario.Usuario
 import java.text.SimpleDateFormat
 import java.util.*
 
