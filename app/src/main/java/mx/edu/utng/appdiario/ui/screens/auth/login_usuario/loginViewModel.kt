@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import mx.edu.utng.appdiario.Repository.UsuarioRepository
-import mx.edu.utng.appdiario.local.entity.TipoUsuario
+import mx.edu.utng.appdiario.local.entity.Ususario.TipoUsuario
 
 class LoginViewModel(private val repository: UsuarioRepository) : ViewModel() {
 

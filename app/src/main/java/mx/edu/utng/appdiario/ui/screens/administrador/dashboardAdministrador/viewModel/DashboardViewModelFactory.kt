@@ -12,8 +12,10 @@ class DashboardViewModelFactory(private val context: Context) : ViewModelProvide
         if (modelClass.isAssignableFrom(DashboardViewModel::class.java)) {
             val database = AppDatabase.getDatabase(context)
             val repository = DashboardRepository(
-                database.usuarioDao(),
-                database.tarjetaDao()
+                usuarioDao = database.usuarioDao(),
+                tarjetaDao = database.tarjetaDao(),
+                diarioTextoDao = database.diarioTextoDao(),
+                diarioAudioDao = database.diarioAudioDao()
             )
             return DashboardViewModel(repository) as T
         }

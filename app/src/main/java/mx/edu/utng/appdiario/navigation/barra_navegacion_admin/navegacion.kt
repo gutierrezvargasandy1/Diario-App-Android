@@ -19,7 +19,7 @@ import mx.edu.utng.appdiario.ui.screens.administrador.reportes_para_administrado
 
 // 🔹 Pantalla principal con barra inferior
 @Composable
-fun NavegacionAdmin() {
+fun NavegacionAdmin(navController: NavHostController) {
     // NavController para la barra inferior
     val bottomNavController = rememberNavController()
 

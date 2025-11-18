@@ -176,6 +176,7 @@ fun GestionUsuarios(navController: NavController) {
                         .padding(horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+                    // ✅ Corrección: quitar "LazyListScope."
                     items(state.usuariosFiltrados) { usuario ->
                         UsuarioCard(
                             usuario = usuario,
@@ -216,12 +217,10 @@ fun UsuarioCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // Fila superior: Información principal
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Icono de usuario
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = "Usuario",
@@ -231,25 +230,19 @@ fun UsuarioCard(
 
                 Spacer(modifier = Modifier.width(12.dp))
 
-                // Información del usuario
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = usuario.nombre,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF333333)
                     )
-
                     Text(
                         text = usuario.email,
                         fontSize = 14.sp,
                         color = Color.Gray,
                         modifier = Modifier.padding(top = 2.dp)
                     )
-
-                    // Badge del rol
                     Box(
                         modifier = Modifier
                             .padding(top = 4.dp)
@@ -274,7 +267,6 @@ fun UsuarioCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Fila inferior: Fecha y acciones
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -285,8 +277,6 @@ fun UsuarioCard(
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
-
-                // Botones de acción
                 Row {
                     IconButton(onClick = onEditClick) {
                         Icon(
@@ -295,7 +285,6 @@ fun UsuarioCard(
                             tint = Color(0xFF8B4513)
                         )
                     }
-
                     IconButton(onClick = onDeleteClick) {
                         Icon(
                             imageVector = Icons.Default.Delete,
@@ -341,7 +330,7 @@ fun EditarUsuarioDialog(
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
                 )
-                // Selector de rol
+
                 var expanded by remember { mutableStateOf(false) }
                 ExposedDropdownMenuBox(
                     expanded = expanded,

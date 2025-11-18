@@ -120,7 +120,12 @@ fun ReportesAdmin(navController: NavController) {
                 }
             },
             update = { chart ->
-                val entries = state.usuariosPorTipo.entries.map { PieEntry(it.value.toFloat(), it.key) }
+                val entries = state.usuariosPorTipo.entries.map {
+                    PieEntry(
+                        it.value.toFloat(),
+                        it.key
+                    )
+                }
                 val dataSet = PieDataSet(entries, "Usuarios").apply {
                     colors = listOf(
                         AndroidColor.parseColor("#6D3B1A"), // ADMIN

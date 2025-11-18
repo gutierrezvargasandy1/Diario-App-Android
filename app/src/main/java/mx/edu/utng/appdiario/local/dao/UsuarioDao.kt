@@ -1,7 +1,7 @@
 package mx.edu.utng.appdiario.local.dao
 
 import androidx.room.*
-import mx.edu.utng.appdiario.local.entity.Usuario
+import mx.edu.utng.appdiario.local.entity.Ususario.Usuario
 
 @Dao
 interface UsuarioDao {

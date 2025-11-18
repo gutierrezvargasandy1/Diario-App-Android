@@ -1,7 +1,7 @@
 package mx.edu.utng.appdiario.Repository
 
 import mx.edu.utng.appdiario.local.dao.UsuarioDao
-import mx.edu.utng.appdiario.local.entity.Usuario
+import mx.edu.utng.appdiario.local.entity.Ususario.Usuario
 
 class UsuarioRepository(
     private val usuarioDao: UsuarioDao
