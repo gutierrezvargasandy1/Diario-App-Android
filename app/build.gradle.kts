@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.text)
     implementation(libs.androidx.ui.text)
     implementation(libs.androidx.benchmark.traceprocessor)
+    implementation(libs.androidx.foundation)
     val roomVersion = libs.versions.roomKtx.get()
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation(libs.androidx.core.ktx)

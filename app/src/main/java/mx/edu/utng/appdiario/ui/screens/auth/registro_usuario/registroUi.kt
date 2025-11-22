@@ -1,15 +1,9 @@
 package mx.edu.utng.appdiario.ui.screens.auth.registro_usuario
 
+import android.app.DatePickerDialog
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -17,20 +11,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import java.util.Calendar
 
 // Colores personalizados
 val BotonPrincipalColor = Color(0xFF6200EE)
@@ -52,6 +37,7 @@ val FondoCampoErrorColor = Color(0xFFFFE6E6)
 
 @Composable
 fun Registro(navController: NavHostController) {
+
     val context = LocalContext.current
     val viewModel: RegistroViewModel = viewModel(
         factory = RegistroViewModelFactory(context)
@@ -93,7 +79,7 @@ fun Registro(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Mostrar errores
+            // Mostrar errores generales
             state.error?.let { error ->
                 Text(
                     text = error,
@@ -111,12 +97,8 @@ fun Registro(navController: NavHostController) {
                 onFechaNacimientoChange = viewModel::onFechaNacimientoChange,
                 onEmailChange = viewModel::onEmailChange,
                 onPasswordChange = viewModel::onPasswordChange,
-                onRegistrar = {
-                    viewModel.registrarUsuario()
-                },
-                onCancelar = {
-                    navController.popBackStack()
-                },
+                onRegistrar = { viewModel.registrarUsuario() },
+                onCancelar = { navController.popBackStack() },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
         }
@@ -148,6 +130,7 @@ fun LoginForm(
     onCancelar: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
     val scrollState = rememberScrollState()
 
     Column(
@@ -155,6 +138,7 @@ fun LoginForm(
             .verticalScroll(scrollState)
             .padding(bottom = 16.dp)
     ) {
+
         Spacer(modifier = Modifier.height(8.dp))
 
         // Campo Email
@@ -197,23 +181,20 @@ fun LoginForm(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Campo Fecha Nacimiento
-        CampoTexto(
+        // Campo Fecha → reemplazado por DatePicker
+        CampoFecha(
             value = state.fechaNacimiento,
             onValueChange = onFechaNacimientoChange,
-            placeholder = "Fecha de Nacimiento (DD/MM/AAAA)",
             errorMessage = state.fechaNacimientoError
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Campo Password (SIN INDICADOR DE FORTALEZA)
-        CampoTexto(
+        // Campo Contraseña
+        CampoPassword(
             value = state.password,
             onValueChange = onPasswordChange,
-            placeholder = "Contraseña",
-            errorMessage = state.passwordError,
-            isPassword = true
+            errorMessage = state.passwordError
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -226,9 +207,9 @@ fun LoginForm(
         )
 
         Spacer(modifier = Modifier.height(24.dp))
+
         SocialLogin()
 
-        // Espacio adicional para mejor scroll
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
@@ -238,27 +219,20 @@ fun CampoTexto(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
-    errorMessage: String?,
-    isPassword: Boolean = false
+    errorMessage: String?
 ) {
     Column {
         TextField(
             value = value,
             onValueChange = onValueChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    if (errorMessage != null) FondoCampoErrorColor else FondoCampoColor,
-                    shape = RoundedCornerShape(8.dp)
-                ),
+            modifier = Modifier.fillMaxWidth(),
             placeholder = { Text(placeholder) },
-            visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
             singleLine = true,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = if (errorMessage != null) FondoCampoErrorColor else FondoCampoColor,
                 unfocusedContainerColor = if (errorMessage != null) FondoCampoErrorColor else FondoCampoColor,
-                focusedIndicatorColor = if (errorMessage != null) ErrorColor else Color.Transparent,
-                unfocusedIndicatorColor = if (errorMessage != null) ErrorColor else Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black,
                 cursorColor = Color.Black
@@ -266,7 +240,126 @@ fun CampoTexto(
             isError = errorMessage != null
         )
 
-        // Mostrar mensaje de error si existe
+        if (!errorMessage.isNullOrEmpty()) {
+            Text(
+                text = errorMessage,
+                color = ErrorColor,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun CampoFecha(
+    value: String,
+    onValueChange: (String) -> Unit,
+    errorMessage: String?
+) {
+    val context = LocalContext.current
+    val calendario = Calendar.getInstance()
+
+    Column {
+
+        Box {
+
+            // TextField deshabilitado
+            TextField(
+                value = value,
+                onValueChange = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp), // Alto exacto del TextField
+                placeholder = { Text("Fecha de nacimiento") },
+                enabled = false,
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    disabledContainerColor = if (errorMessage != null) FondoCampoErrorColor else FondoCampoColor,
+                    disabledIndicatorColor = Color.Transparent,
+                    disabledTextColor = Color.Black
+                )
+            )
+
+            // Capa invisible que detecta clic
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clickable {
+                        val year = calendario.get(Calendar.YEAR)
+                        val month = calendario.get(Calendar.MONTH)
+                        val day = calendario.get(Calendar.DAY_OF_MONTH)
+
+                        DatePickerDialog(
+                            context,
+                            { _, y, m, d ->
+                                val fecha = "%02d/%02d/%04d".format(d, m + 1, y)
+                                onValueChange(fecha)
+                            },
+                            year,
+                            month,
+                            day
+                        ).show()
+                    }
+            )
+        }
+
+        // Mostrar error
+        if (!errorMessage.isNullOrEmpty()) {
+            Text(
+                text = errorMessage,
+                color = ErrorColor,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+            )
+        }
+    }
+}
+
+
+@Composable
+fun CampoPassword(
+    value: String,
+    onValueChange: (String) -> Unit,
+    errorMessage: String?
+) {
+    var passwordVisible by remember { mutableStateOf(false) }
+
+    Column {
+        TextField(
+            value = value,
+            onValueChange = { nuevoValor ->
+                val limpio = nuevoValor
+                    .replace("[´`^¨]".toRegex(), "")
+                    .replace("\\s".toRegex(), "")
+                    .replace("[<>]".toRegex(), "")
+
+                onValueChange(limpio)
+            },
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text("Contraseña") },
+            singleLine = true,
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                        contentDescription = "Mostrar/Ocultar"
+                    )
+                }
+            },
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = if (errorMessage != null) FondoCampoErrorColor else FondoCampoColor,
+                unfocusedContainerColor = if (errorMessage != null) FondoCampoErrorColor else FondoCampoColor,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                cursorColor = Color.Black,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
+            ),
+            isError = errorMessage != null
+        )
+
         if (!errorMessage.isNullOrEmpty()) {
             Text(
                 text = errorMessage,
@@ -297,6 +390,7 @@ fun BotonesRegistro(
         ) {
             Text("Registrarse", color = TextoBotonColor)
         }
+
         OutlinedButton(
             onClick = onCancelar,
             colors = ButtonDefaults.outlinedButtonColors(contentColor = BotonPrincipalColor)

@@ -45,12 +45,12 @@ import mx.edu.utng.appdiario.navigation.navegacion_global.NavRoutes
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
+
     val context = LocalContext.current
     val viewModel: LoginViewModel = viewModel(
         factory = LoginViewModelFactory(context)
     )
 
-    // Observar los estados del ViewModel
     val email by viewModel.email.observeAsState(initial = "")
     val password by viewModel.password.observeAsState(initial = "")
     val loginEnable by viewModel.loginEnable.observeAsState(initial = false)
@@ -61,7 +61,6 @@ fun LoginScreen(navController: NavHostController) {
     val navigateToAdmin by viewModel.navigateToAdmin.observeAsState(initial = false)
     val navigateToUser by viewModel.navigateToUser.observeAsState(initial = false)
 
-    // Efectos para navegación automática después del login
     LaunchedEffect(navigateToAdmin) {
         if (navigateToAdmin) {
             navController.navigate("adminHome") {
@@ -96,17 +95,16 @@ fun LoginScreen(navController: NavHostController) {
             emailError = emailError,
             passwordError = passwordError,
             onEmailChange = { newEmail ->
-                viewModel.onLoginChanged(newEmail, password)
+                viewModel.onEmailChanged(newEmail)
             },
             onPasswordChange = { newPassword ->
-                viewModel.onLoginChanged(email, newPassword)
+                viewModel.onPasswordChanged(newPassword)
             },
             onLoginClick = {
                 viewModel.loginUsuario()
             }
         )
 
-        // Loading overlay
         if (isLoading) {
             Box(
                 modifier = Modifier
@@ -146,11 +144,11 @@ fun Login(
         verticalArrangement = Arrangement.Center
     ) {
         Imagen(Modifier.padding(top = 10.dp))
+        Spacer(modifier = Modifier.padding(30.dp))
 
-        // Mostrar errores generales
-        errorMessage?.let { error ->
+        errorMessage?.let {
             Text(
-                text = error,
+                text = it,
                 color = Color.Red,
                 fontSize = 14.sp,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -180,7 +178,6 @@ fun Login(
 
         Spacer(modifier = Modifier.padding(8.dp))
 
-        // 🔹 BOTÓN DE RECUPERACIÓN DE CONTRASEÑA - NUEVO
         PasswordRecoveryButton {
             navController.navigate(NavRoutes.PASSWORD_RECOVERY)
         }
@@ -202,6 +199,59 @@ fun Imagen(modifier: Modifier) {
     )
 }
 
+// ---------------------------------------------------
+//          NUEVO EMAILFIELD @gmail.com CORREGIDO
+// ---------------------------------------------------
+@Composable
+fun EmailField(
+    email: String,
+    onTextFieldChanged: (String) -> Unit,
+    errorMessage: String?
+) {
+    val gmailRegex = Regex("^[a-zA-Z0-9._%+-]+@gmail\\.com$")
+
+    Column {
+        TextField(
+            value = email,
+            onValueChange = { newValue ->
+                onTextFieldChanged(newValue)
+            },
+            placeholder = {
+                Text(
+                    text = "ejemplo@gmail.com",
+                    color = Color(0xFF4B3621),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Italic
+                )
+            },
+            modifier = Modifier
+                .width(320.dp)
+                .height(56.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            singleLine = true,
+            isError = !gmailRegex.matches(email) && email.isNotEmpty(),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = Color(0xFF4B3621),
+                unfocusedContainerColor = Color.White,
+                focusedContainerColor = Color.White,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                errorIndicatorColor = Color.Red
+            )
+        )
+
+        if (!gmailRegex.matches(email) && email.isNotEmpty()) {
+            Text(
+                text = "Debe ser un correo @gmail.com",
+                color = Color.Red,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+            )
+        }
+    }
+}
+
 @Composable
 fun PasswordField(
     password: String,
@@ -210,14 +260,8 @@ fun PasswordField(
 ) {
     Column {
         TextField(
-            modifier = Modifier
-                .width(320.dp)
-                .height(56.dp)
-                .fillMaxWidth()
-                .background(
-                    if (errorMessage != null) Color(0xFFFFE6E6) else Color.White,
-                    shape = RoundedCornerShape(4.dp)
-                ),
+            value = password,
+            onValueChange = { onTextFieldChanged(it) },
             placeholder = {
                 Text(
                     text = "Password",
@@ -227,22 +271,22 @@ fun PasswordField(
                     fontStyle = FontStyle.Italic
                 )
             },
-            value = password,
-            onValueChange = { onTextFieldChanged(it) },
+            modifier = Modifier
+                .width(320.dp)
+                .height(56.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             singleLine = true,
-            maxLines = 1,
+            isError = errorMessage != null,
             colors = TextFieldDefaults.colors(
                 focusedTextColor = Color(0xFF4B3621),
-                unfocusedContainerColor = if (errorMessage != null) Color(0xFFFFE6E6) else Color.White,
-                focusedContainerColor = if (errorMessage != null) Color(0xFFFFE6E6) else Color.White,
-                unfocusedIndicatorColor = if (errorMessage != null) Color.Red else Color.Transparent,
-                focusedIndicatorColor = if (errorMessage != null) Color.Red else Color.Transparent
-            ),
-            isError = errorMessage != null
+                unfocusedContainerColor = Color.White,
+                focusedContainerColor = Color.White,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                errorIndicatorColor = Color.Red
+            )
         )
 
-        // Mostrar mensaje de error
         if (!errorMessage.isNullOrEmpty()) {
             Text(
                 text = errorMessage,
@@ -267,9 +311,7 @@ fun LoginButton(
             .height(48.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Black,
-            contentColor = Color.White,
-            disabledContainerColor = Color(0xFFEB833D),
-            disabledContentColor = Color.White
+            contentColor = Color.White
         ),
         enabled = loginEnable && !isLoading
     ) {
@@ -297,9 +339,7 @@ fun RegistrarseBotton(loginEnable: Boolean, onLoginSelected: () -> Unit) {
             .height(48.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Black,
-            contentColor = Color.White,
-            disabledContainerColor = Color.Black,
-            disabledContentColor = Color.White
+            contentColor = Color.White
         ),
         enabled = loginEnable
     ) {
@@ -311,7 +351,6 @@ fun RegistrarseBotton(loginEnable: Boolean, onLoginSelected: () -> Unit) {
     }
 }
 
-// 🔹 NUEVO COMPONENTE: BOTÓN DE RECUPERACIÓN DE CONTRASEÑA
 @Composable
 fun PasswordRecoveryButton(onRecoverySelected: () -> Unit) {
     TextButton(
@@ -326,57 +365,5 @@ fun PasswordRecoveryButton(onRecoverySelected: () -> Unit) {
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium
         )
-    }
-}
-
-@Composable
-fun EmailField(
-    email: String,
-    onTextFieldChanged: (String) -> Unit,
-    errorMessage: String?
-) {
-    Column {
-        TextField(
-            modifier = Modifier
-                .width(320.dp)
-                .height(56.dp)
-                .fillMaxWidth()
-                .background(
-                    if (errorMessage != null) Color(0xFFFFE6E6) else Color.White,
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
-                ),
-            placeholder = {
-                Text(
-                    text = "Email",
-                    color = Color(0xFF4B3621),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontStyle = FontStyle.Italic
-                )
-            },
-            value = email,
-            onValueChange = { onTextFieldChanged(it) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            singleLine = true,
-            maxLines = 1,
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = Color(0xFF4B3621),
-                unfocusedContainerColor = if (errorMessage != null) Color(0xFFFFE6E6) else Color.White,
-                focusedContainerColor = if (errorMessage != null) Color(0xFFFFE6E6) else Color.White,
-                unfocusedIndicatorColor = if (errorMessage != null) Color.Red else Color.Transparent,
-                focusedIndicatorColor = if (errorMessage != null) Color.Red else Color.Transparent
-            ),
-            isError = errorMessage != null
-        )
-
-        // Mostrar mensaje de error
-        if (!errorMessage.isNullOrEmpty()) {
-            Text(
-                text = errorMessage,
-                color = Color.Red,
-                fontSize = 12.sp,
-                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
-            )
-        }
     }
 }

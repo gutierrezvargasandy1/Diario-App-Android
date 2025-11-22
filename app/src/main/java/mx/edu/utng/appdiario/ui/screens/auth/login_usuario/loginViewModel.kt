@@ -11,7 +11,7 @@ import mx.edu.utng.appdiario.local.entity.Ususario.TipoUsuario
 
 class LoginViewModel(
     private val repository: UsuarioRepository,
-    private val sessionManager: SessionManager // ✅ Añadido SessionManager como parámetro
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     private val _email = MutableLiveData<String>()
@@ -44,7 +44,17 @@ class LoginViewModel(
     private val _passwordError = MutableLiveData<String?>()
     val passwordError: LiveData<String?> = _passwordError
 
-    ////////////////////////////////ONELOGINCHANGED(Actualizar login)
+    ////////////////////////////////////////////////////////////////////////////////
+    // NUEVAS FUNCIONES PARA EVITAR "Unresolved reference"
+    fun onEmailChanged(newEmail: String) {
+        onLoginChanged(newEmail, _password.value ?: "")
+    }
+
+    fun onPasswordChanged(newPassword: String) {
+        onLoginChanged(_email.value ?: "", newPassword)
+    }
+    ////////////////////////////////////////////////////////////////////////////////
+
     fun onLoginChanged(email: String, password: String) {
         _email.value = email
         _password.value = password
@@ -70,7 +80,8 @@ class LoginViewModel(
     private fun isValidPassword(password: String): Boolean =
         password.length >= 6
 
-    ////////////////////////////// FUNCIÓN PARA LOGIN CON SQLite
+    /////////////////////////////////////////////////////////////////////////////
+    // LOGIN CON SQLite
     fun loginUsuario() {
         val currentEmail = _email.value ?: ""
         val currentPassword = _password.value ?: ""
@@ -86,7 +97,6 @@ class LoginViewModel(
 
         viewModelScope.launch {
             try {
-                // PASO 2: Buscar usuario en SQLite
                 val usuario = repository.obtenerUsuarioPorEmail(currentEmail)
 
                 if (usuario == null) {
@@ -95,19 +105,18 @@ class LoginViewModel(
                     return@launch
                 }
 
-                // Verificar contraseña
                 if (usuario.password != currentPassword) {
                     _errorMessage.value = "Contraseña incorrecta"
                     _isLoading.value = false
                     return@launch
                 }
 
-                // ✅ GUARDAR SESIÓN después del login exitoso
+                // Guardar sesión
                 println("DEBUG: Login exitoso, guardando userId: ${usuario.idUsua}")
                 sessionManager.saveUserId(usuario.idUsua)
 
-                // Login exitoso - navegar según tipo de usuario
                 _isLoading.value = false
+
                 when (usuario.tipo) {
                     TipoUsuario.ADMIN -> _navigateToAdmin.value = true
                     TipoUsuario.NORMAL -> _navigateToUser.value = true
@@ -121,7 +130,8 @@ class LoginViewModel(
         }
     }
 
-    ////////////////////////////// FUNCIONES PARA LIMPIAR ESTADOS DE NAVEGACIÓN
+    /////////////////////////////////////////////////////////////////////////////
+    // LIMPIAR ESTADOS DE NAVEGACIÓN
     fun onNavigateToRegisterCompleted() {
         _navigateToRegister.value = false
     }
@@ -134,7 +144,7 @@ class LoginViewModel(
         _navigateToUser.value = false
     }
 
-    ////////////////////////////// FUNCIÓN PARA NAVEGAR A REGISTRO
+    /////////////////////////////////////////////////////////////////////////////
     fun navigateToRegister() {
         _navigateToRegister.value = true
     }
