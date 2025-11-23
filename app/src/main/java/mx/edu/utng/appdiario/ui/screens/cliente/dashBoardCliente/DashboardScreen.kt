@@ -75,12 +75,6 @@ fun DashboardScreen(
             )
         }
 
-        // Mensaje adicional
-        Text(
-            text = "Elige cómo quieres expresarte hoy",
-            fontSize = 16.sp,
-            color = Color.Gray,
-            modifier = Modifier.padding(top = 40.dp)
-        )
+
     }
 }

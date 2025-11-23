@@ -187,38 +187,32 @@ fun DiarioAudioScreen(navController: NavHostController) {
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
 
-                Column(
-                    modifier = Modifier.fillMaxWidth()
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        RadioOption(
-                            text = "RESETAS",
-                            selected = selectedOption == "RESETAS",
-                            onSelected = { selectedOption = "RESETAS" }
-                        )
-                        RadioOption(
-                            text = "PERSONAL",
-                            selected = selectedOption == "PERSONAL",
-                            onSelected = { selectedOption = "PERSONAL" }
-                        )
-                    }
+                    RadioOption(
+                        text = "RESETA",
+                        selected = selectedOption == "RESETAS",
+                        onSelected = { selectedOption = "RESETAS" }
+                    )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    RadioOption(
+                        text = "PERSONAL",
+                        selected = selectedOption == "PERSONAL",
+                        onSelected = { selectedOption = "PERSONAL" }
+                    )
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        RadioOption(
-                            text = "ACTIVIDADES",
-                            selected = selectedOption == "ACTIVIDADES",
-                            onSelected = { selectedOption = "ACTIVIDADES" }
-                        )
-                    }
+                    RadioOption(
+                        text = "ACTIVIDAD",
+                        selected = selectedOption == "ACTIVIDADES",
+                        onSelected = { selectedOption = "ACTIVIDADES" }
+                    )
                 }
+
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -608,7 +602,8 @@ fun RadioOption(
         Text(
             text = text,
             color = Color(0xFF4E2A0E),
-            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(start = 4.dp)
         )
     }

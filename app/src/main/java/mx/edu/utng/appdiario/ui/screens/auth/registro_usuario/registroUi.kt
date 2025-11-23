@@ -8,9 +8,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
@@ -28,12 +25,12 @@ import androidx.navigation.NavHostController
 import java.util.Calendar
 
 // Colores personalizados
-val BotonPrincipalColor = Color(0xFF6200EE)
+val PanelSuperiorColor = Color(0xFF5D2600)  // Café oscuro línea visual
+val BotonPrincipalColor = Color(0xFF5D2600) // Café oscuro en botones
 val TextoBotonColor = Color.White
 val FondoCampoColor = Color(0xFFFFCC89)
-val PanelSuperiorColor = Color(0xFF5D2600)
-val ErrorColor = Color(0xFFFF5252)
 val FondoCampoErrorColor = Color(0xFFFFE6E6)
+val ErrorColor = Color(0xFFFF5252)
 
 @Composable
 fun Registro(navController: NavHostController) {
@@ -44,7 +41,7 @@ fun Registro(navController: NavHostController) {
     )
     val state by viewModel.state.collectAsState()
 
-    // Navegar de regreso cuando el registro sea exitoso
+    // Cuando el registro sea exitoso, regresar
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
             navController.popBackStack()
@@ -62,7 +59,7 @@ fun Registro(navController: NavHostController) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Panel café superior
+            // Panel Café Superior
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -79,7 +76,7 @@ fun Registro(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Mostrar errores generales
+            // Errores generales
             state.error?.let { error ->
                 Text(
                     text = error,
@@ -88,7 +85,7 @@ fun Registro(navController: NavHostController) {
                 )
             }
 
-            // Contenido del formulario
+            // Formulario
             LoginForm(
                 state = state,
                 onNombreChange = viewModel::onNombreChange,
@@ -97,6 +94,7 @@ fun Registro(navController: NavHostController) {
                 onFechaNacimientoChange = viewModel::onFechaNacimientoChange,
                 onEmailChange = viewModel::onEmailChange,
                 onPasswordChange = viewModel::onPasswordChange,
+                onConfirmPasswordChange = viewModel::onConfirmPasswordChange,
                 onRegistrar = { viewModel.registrarUsuario() },
                 onCancelar = { navController.popBackStack() },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -106,7 +104,7 @@ fun Registro(navController: NavHostController) {
         // Loading overlay
         if (state.isLoading) {
             Box(
-                modifier = Modifier
+                Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.5f)),
                 contentAlignment = Alignment.Center
@@ -126,6 +124,7 @@ fun LoginForm(
     onFechaNacimientoChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
+    onConfirmPasswordChange: (String) -> Unit,
     onRegistrar: () -> Unit,
     onCancelar: () -> Unit,
     modifier: Modifier = Modifier
@@ -139,9 +138,8 @@ fun LoginForm(
             .padding(bottom = 16.dp)
     ) {
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(Modifier.height(8.dp))
 
-        // Campo Email
         CampoTexto(
             value = state.email,
             onValueChange = onEmailChange,
@@ -149,9 +147,8 @@ fun LoginForm(
             errorMessage = state.emailError
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(Modifier.height(8.dp))
 
-        // Campo Nombre
         CampoTexto(
             value = state.nombre,
             onValueChange = onNombreChange,
@@ -159,9 +156,8 @@ fun LoginForm(
             errorMessage = state.nombreError
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(Modifier.height(8.dp))
 
-        // Campo Apellido Paterno
         CampoTexto(
             value = state.apellidoPaterno,
             onValueChange = onApellidoPaternoChange,
@@ -169,9 +165,8 @@ fun LoginForm(
             errorMessage = state.apellidoPaternoError
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(Modifier.height(8.dp))
 
-        // Campo Apellido Materno
         CampoTexto(
             value = state.apellidoMaterno,
             onValueChange = onApellidoMaternoChange,
@@ -179,38 +174,41 @@ fun LoginForm(
             errorMessage = state.apellidoMaternoError
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(Modifier.height(8.dp))
 
-        // Campo Fecha → reemplazado por DatePicker
         CampoFecha(
             value = state.fechaNacimiento,
             onValueChange = onFechaNacimientoChange,
             errorMessage = state.fechaNacimientoError
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(Modifier.height(8.dp))
 
-        // Campo Contraseña
         CampoPassword(
             value = state.password,
             onValueChange = onPasswordChange,
+            placeholder = "Contraseña",
             errorMessage = state.passwordError
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(8.dp))
 
-        // Botones
+        CampoPassword(
+            value = state.confirmPassword,
+            onValueChange = onConfirmPasswordChange,
+            placeholder = "Confirmar contraseña",
+            errorMessage = state.confirmPasswordError
+        )
+
+        Spacer(Modifier.height(16.dp))
+
         BotonesRegistro(
             onRegistrar = onRegistrar,
             onCancelar = onCancelar,
             isFormValid = state.isFormValid
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        SocialLogin()
-
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(24.dp))
     }
 }
 
@@ -233,9 +231,9 @@ fun CampoTexto(
                 unfocusedContainerColor = if (errorMessage != null) FondoCampoErrorColor else FondoCampoColor,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
+                cursorColor = Color.Black,
                 focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
-                cursorColor = Color.Black
+                unfocusedTextColor = Color.Black
             ),
             isError = errorMessage != null
         )
@@ -263,14 +261,12 @@ fun CampoFecha(
     Column {
 
         Box {
-
-            // TextField deshabilitado
             TextField(
                 value = value,
                 onValueChange = {},
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp), // Alto exacto del TextField
+                    .height(56.dp),
                 placeholder = { Text("Fecha de nacimiento") },
                 enabled = false,
                 singleLine = true,
@@ -281,7 +277,6 @@ fun CampoFecha(
                 )
             )
 
-            // Capa invisible que detecta clic
             Box(
                 modifier = Modifier
                     .matchParentSize()
@@ -296,15 +291,12 @@ fun CampoFecha(
                                 val fecha = "%02d/%02d/%04d".format(d, m + 1, y)
                                 onValueChange(fecha)
                             },
-                            year,
-                            month,
-                            day
+                            year, month, day
                         ).show()
                     }
             )
         }
 
-        // Mostrar error
         if (!errorMessage.isNullOrEmpty()) {
             Text(
                 text = errorMessage,
@@ -316,35 +308,34 @@ fun CampoFecha(
     }
 }
 
-
 @Composable
 fun CampoPassword(
     value: String,
     onValueChange: (String) -> Unit,
+    placeholder: String,
     errorMessage: String?
 ) {
-    var passwordVisible by remember { mutableStateOf(false) }
+    var visible by remember { mutableStateOf(false) }
 
     Column {
         TextField(
             value = value,
-            onValueChange = { nuevoValor ->
-                val limpio = nuevoValor
+            onValueChange = { nuevo ->
+                val limpio = nuevo
                     .replace("[´`^¨]".toRegex(), "")
                     .replace("\\s".toRegex(), "")
                     .replace("[<>]".toRegex(), "")
-
                 onValueChange(limpio)
             },
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Contraseña") },
+            placeholder = { Text(placeholder) },
             singleLine = true,
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                IconButton(onClick = { visible = !visible }) {
                     Icon(
-                        imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                        contentDescription = "Mostrar/Ocultar"
+                        imageVector = if (visible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                        contentDescription = null
                     )
                 }
             },
@@ -363,7 +354,7 @@ fun CampoPassword(
         if (!errorMessage.isNullOrEmpty()) {
             Text(
                 text = errorMessage,
-                color = ErrorColor,
+                color = Color.Red,
                 fontSize = 12.sp,
                 modifier = Modifier.padding(start = 4.dp, top = 4.dp)
             )
@@ -378,46 +369,38 @@ fun BotonesRegistro(
     isFormValid: Boolean
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
+
+        // BOTÓN REGISTRARSE (relleno café)
         Button(
             onClick = onRegistrar,
             enabled = isFormValid,
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (isFormValid) BotonPrincipalColor else Color.Gray
-            )
+                containerColor = if (isFormValid)
+                    BotonPrincipalColor
+                else
+                    BotonPrincipalColor.copy(alpha = 0.4f),
+                contentColor = Color.White
+            ),
+            shape = RoundedCornerShape(10.dp),
+            modifier = Modifier.width(140.dp)
         ) {
-            Text("Registrarse", color = TextoBotonColor)
+            Text("Registrarse")
         }
 
-        OutlinedButton(
+        // BOTÓN CANCELAR (relleno café también)
+        Button(
             onClick = onCancelar,
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = BotonPrincipalColor)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = BotonPrincipalColor,
+                contentColor = Color.White
+            ),
+            shape = RoundedCornerShape(10.dp),
+            modifier = Modifier.width(140.dp)
         ) {
             Text("Cancelar")
-        }
-    }
-}
-
-@Composable
-fun SocialLogin() {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("O regístrate con")
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            IconButton(onClick = {}) {
-                Icon(Icons.Default.Build, contentDescription = "Facebook")
-            }
-            IconButton(onClick = {}) {
-                Icon(Icons.Default.Email, contentDescription = "Google")
-            }
-            IconButton(onClick = {}) {
-                Icon(Icons.Default.Share, contentDescription = "Twitter")
-            }
         }
     }
 }

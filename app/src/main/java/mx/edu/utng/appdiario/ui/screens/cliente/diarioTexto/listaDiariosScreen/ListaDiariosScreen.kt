@@ -336,7 +336,7 @@ fun ListaDiariosScreen(
                 ) {
                     // CAMBIO: Usar los tipos exactos de la BD
                     FilterRadioOption(
-                        text = "RESETAS",
+                        text = "RESETA",
                         selected = selectedFilter.value == "RESETAS",
                         onSelected = { selectedFilter.value = "RESETAS" }
                     )
@@ -346,7 +346,7 @@ fun ListaDiariosScreen(
                         onSelected = { selectedFilter.value = "PERSONAL" }
                     )
                     FilterRadioOption(
-                        text = "ACTIVIDADES",
+                        text = "ACTIVIDAD",
                         selected = selectedFilter.value == "ACTIVIDADES",
                         onSelected = { selectedFilter.value = "ACTIVIDADES" }
                     )

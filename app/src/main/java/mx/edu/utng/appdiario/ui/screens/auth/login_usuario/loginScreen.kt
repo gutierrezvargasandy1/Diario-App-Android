@@ -16,9 +16,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -27,6 +32,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +43,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -218,7 +228,7 @@ fun EmailField(
             },
             placeholder = {
                 Text(
-                    text = "ejemplo@gmail.com",
+                    text = "Gmail",
                     color = Color(0xFF4B3621),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
@@ -258,6 +268,8 @@ fun PasswordField(
     onTextFieldChanged: (String) -> Unit,
     errorMessage: String?
 ) {
+    var passwordVisible by remember { mutableStateOf(false) }
+
     Column {
         TextField(
             value = password,
@@ -274,9 +286,31 @@ fun PasswordField(
             modifier = Modifier
                 .width(320.dp)
                 .height(56.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             singleLine = true,
             isError = errorMessage != null,
+
+            // 👁 Mostrar / ocultar texto
+            visualTransformation = if (passwordVisible) {
+                VisualTransformation.None
+            } else {
+                PasswordVisualTransformation()
+            },
+
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+
+            trailingIcon = {
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        imageVector = if (passwordVisible)
+                            Icons.Default.Visibility
+                        else
+                            Icons.Default.VisibilityOff,
+                        contentDescription = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña",
+                        tint = Color(0xFF4B3621)
+                    )
+                }
+            },
+
             colors = TextFieldDefaults.colors(
                 focusedTextColor = Color(0xFF4B3621),
                 unfocusedContainerColor = Color.White,
@@ -297,6 +331,7 @@ fun PasswordField(
         }
     }
 }
+
 
 @Composable
 fun LoginButton(

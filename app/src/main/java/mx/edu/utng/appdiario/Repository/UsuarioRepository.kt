@@ -36,6 +36,13 @@ class UsuarioRepository(
         return usuarioDao.obtenerTodos().find { it.email == email }
     }
 
+    suspend fun validarUsuarioPorEmail(email: String): Boolean {
+        val usuario = usuarioDao.obtenerTodos().find { it.email == email }
+        return usuario != null
+    }
+
+
+
     suspend fun login(email: String, password: String): Usuario? {
         return usuarioDao.login(email, password)
     }

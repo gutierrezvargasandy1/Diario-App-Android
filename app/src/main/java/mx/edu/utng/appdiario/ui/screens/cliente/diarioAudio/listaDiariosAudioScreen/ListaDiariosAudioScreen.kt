@@ -324,9 +324,8 @@ fun ListaDiariosAudioScreen(navController: NavController) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    // ACTUALIZADO: Usar tipos exactos de la BD
                     FilterRadioOption(
-                        text = "RESETAS",
+                        text = "RESETA",
                         selected = selectedFilter.value == "RESETAS",
                         onSelected = { selectedFilter.value = "RESETAS" }
                     )
@@ -336,11 +335,12 @@ fun ListaDiariosAudioScreen(navController: NavController) {
                         onSelected = { selectedFilter.value = "PERSONAL" }
                     )
                     FilterRadioOption(
-                        text = "ACTIVIDADES",
+                        text = "ACTIVIDAD",
                         selected = selectedFilter.value == "ACTIVIDADES",
                         onSelected = { selectedFilter.value = "ACTIVIDADES" }
                     )
                 }
+
             }
         }
 
@@ -569,8 +569,8 @@ fun FilterRadioOption(
         Text(
             text = text,
             color = Color(0xFF4E2A0E),
-            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
-            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            fontSize = 11.sp,
             modifier = Modifier.padding(start = 4.dp)
         )
     }

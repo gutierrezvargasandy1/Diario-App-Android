@@ -52,7 +52,7 @@ fun DiarioTextoScreen(
     // 🔥 Obtener ID del usuario desde DataStore
     val userId by sessionManager.userIdFlow.collectAsState(initial = null)
 
-    // 🔥 Estado local del tipo de entrada seleccionado
+    // 🔥 Tipo seleccionado
     val tipoSeleccionado = remember { mutableStateOf<TipoTarjeta?>(null) }
 
     LaunchedEffect(modoEdicion, idDiarioTexto) {
@@ -116,6 +116,9 @@ fun DiarioTextoScreen(
                     textAlign = TextAlign.Center
                 )
 
+                // ------------------------------
+                // 🔥 SELECTOR HORIZONTAL BONITO
+                // ------------------------------
                 if (!modoEdicion) {
                     Text(
                         text = "Tipo de entrada:",
@@ -125,26 +128,33 @@ fun DiarioTextoScreen(
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
 
-                    // 🔥 Selector de tipo (solo estado local)
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        TipoTarjeta.values().forEach { tipo ->
-                            RadioOption(
-                                text = when (tipo) {
-                                    TipoTarjeta.PERSONAL -> "Personal"
-                                    TipoTarjeta.RESETAS -> "Receta"
-                                    TipoTarjeta.ACTIVIDADES -> "Actividad"
-                                },
-                                selected = tipoSeleccionado.value == tipo,
-                                onSelected = { tipoSeleccionado.value = tipo }
-                            )
+
+                        listOf(
+                            TipoTarjeta.RESETAS to "RESETA",
+                            TipoTarjeta.PERSONAL to "PERSONAL",
+                            TipoTarjeta.ACTIVIDADES to "ACTIVIDAD"
+                        ).forEach { (tipo, texto) ->
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                RadioOption(
+                                    text = texto,
+                                    selected = tipoSeleccionado.value == tipo,
+                                    onSelected = { tipoSeleccionado.value = tipo }
+                                )
+                            }
                         }
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
                 }
+                // -------------------------------------
 
                 TextFieldLabeled(
                     label = "Título:",
